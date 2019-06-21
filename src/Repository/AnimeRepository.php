@@ -36,7 +36,73 @@ class AnimeRepository extends ServiceEntityRepository
         
         return $resultado;
     }
-     
+    
+    /**
+      * @return Boolean Returns true/false
+      */
+    public function tituloInvalido( $nuevoAnime, $animeId, $titulo){
+        if ($titulo){
+            if ($nuevoAnime == NULL) {
+                $resultado = $this->findOneBy(['titulo'=>$titulo]);
+                if ($resultado != NULL) {
+                    if ($resultado->getId() != $animeId) {
+                        return true;
+                    }
+                }
+            } else 
+            if ($this->findOneBy(['titulo'=>$titulo])) {
+                return true;
+            }
+        } else {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+      * @return Anime Returns an Anime object
+      */
+    public function crear($animeInfo){
+        $anime = new \App\Entity\Anime();
+            
+        $anime->setTitulo($animeInfo['titulo']);
+        $anime->setDescripcion($animeInfo['descripcion']);
+        $anime->setEtiquetas($animeInfo['etiquetas']);
+        $anime->setValoracion(3); // por defecto
+        $anime->setFechaPublicacion($animeInfo['fecha_publicacion']);//->format("Y-m-d H:i:s"));)
+
+        if ($fichero) {
+            $anime->setPortada($this->getParameter('ruta_portadas')."/".$nombreFicheroEncriptado);
+        }
+
+        return $anime;    
+    }
+
+    /**
+      * @return Anime Returns an Anime object
+      */
+    public function actualiza($id, $animeInfo)
+    {
+        $anime = $this->find($id);
+        $anime->setTitulo($animeInfo['titulo']);
+        $anime->setDescripcion($animeInfo['descripcion']);
+        $anime->setEtiquetas($animeInfo['etiquetas']);
+        if ($anime->getPortadaPath() != NULL && $animeInfo['fichero']!=NULL){
+            $fs=new \Symfony\Component\Filesystem\Filesystem();
+            try {
+                $fs->remove([$anime->getPortadaPath()]);
+            } catch (IOExceptionInterface $exception) {
+                //echo "An error occurred while creating your directory at ".$exception->getPath();
+            }    
+        }
+        if ($animeInfo['fichero']) {
+            $anime->setPortada($animeInfo['fichero']);
+        }
+
+        return $anime;
+    }
+
     // /**
     //  * @return Anime[] Returns an array of Anime objects
     //  */

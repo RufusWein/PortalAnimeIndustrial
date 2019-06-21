@@ -246,7 +246,8 @@
             <h1>Información</h1>
             <div>
                 <span class="info">Título</span>
-                <input {% if error_titulo is defined %} style="animation-name: warning;animation-duration: 1s;animation-iteration-count: infinite;" {% endif %} name="titulo" value="{{ titulo }}" required="required"> {% if error_titulo is defined %}&nbsp;&nbsp;
+                <input id="titulo" {% if error_titulo is defined %} style="animation-name: warning;animation-duration: 1s;animation-iteration-count: infinite;" {% endif %} name="titulo" value="{{ titulo }}" required="required"> {% if error_titulo is defined
+                %}&nbsp;&nbsp;
                 <span class="info_error">{{ error_titulo }}</span>{% endif %}
             </div>
 
@@ -259,7 +260,7 @@
 
             <div class="descripcion_box">
                 <span class="info">Descripción</span>
-                <textarea name="descripcion" rows="6" maxlength="255" required="required">
+                <textarea id="descripcion" name="descripcion" rows="6" maxlength="255" required="required">
                     {{- descripcion -}}
                 </textarea>
             </div>
@@ -281,7 +282,7 @@
                     <div>
                         <ul id="lista_series">
                             {% for anime in animes %} {% if anime.id_anime!=-1 %}
-                            <li seleccionada="0" id="serie{{ anime.id_anime }}" onclick="seleccionaSerie(this,{{ anime.id_anime }});">
+                            <li seleccionada="0" id="serie{{ anime.id_anime }}" onclick="seleccionaSerie(this,'{{ anime.id_anime }}');">
                                 {{- anime.titulo -}}
                             </li>
                             {% endif %} {% endfor %}
@@ -357,13 +358,19 @@
 
         });
         document.getElementById("anime_id").value = id; //JSON.stringify({ "anime_id" : id })
-        ajax("/anime/" + id, "{ 'id' : '" + id + "' }", "POST", function(datos) {
-            let anime = JSON.parse(datos);
-            //documet.getElementById("").;
+        ajax("/anime/get/" + id, "{ 'id' : '" + id + "' }", "POST", function(datos) {
+            let anime = JSON.parse(datos),
+                generos = anime["etiquetas"].replace(/^\s|\s\B/g, '').split(' ');
+            document.getElementById("titulo").value = anime.titulo;
+            document.getElementById("descripcion").value = anime.descripcion;
+            document.getElementById("imagen").src = anime.imagen;
 
-            console.log(anime["titulo"]);
-            console.log("listo");
-
+            document["cleargeneros"]();
+            //document["seleccionageneros"](generos[0]);
+            generos.forEach((genero) => {
+                console.log(genero);
+                document["seleccionageneros"](genero);
+            });
         });
     }
 </script>

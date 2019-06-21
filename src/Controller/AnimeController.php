@@ -7,7 +7,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Validator\Constraints\DateTime;
 use App\Utils\Util;
 
@@ -21,7 +20,7 @@ class AnimeController extends AbstractController
      * @Route("/series", name="series")
      */    
     public function anime(){
-        if ($this->getUser() ==NULL) { return $this->redirectToRoute("login_registro"); }
+        if (!Util::esUsuario($this->getUser(),"")){ return $this->redirectToRoute("login_registro");}
 
         $animes = $this->getDoctrine()->getRepository(\App\Entity\Anime::class);
         
@@ -41,8 +40,8 @@ class AnimeController extends AbstractController
      * @Route("/anime/add", name="add_anime")
      */
     public function addAnime() { // solo Admin
-        if ($this->getUser() ==NULL) { return $this->redirectToRoute("login_registro"); }
-        if (!in_array("ADMINISTRADOR",$this->getUser()->getRoles(),TRUE)) { return $this->redirectToRoute("series"); }
+        if (!Util::esUsuario($this->getUser(),"ADMINISTRADOR")){ return $this->redirectToRoute("series"); }
+
         $animes = $this->getDoctrine()->getRepository(\App\Entity\Anime::class);
         
         $porDefecto = [
@@ -66,9 +65,11 @@ class AnimeController extends AbstractController
     }
 
     /**
-     * @Route("/anime/{id}", name="get_anime", methods={"POST"})
+     * @Route("/anime/get/{id}", name="get_anime", methods={"POST"})
      */
     public function getAnime($id, Request $request) {
+        if (!Util::esUsuario($this->getUser(),"")){ return $this->redirectToRoute("login_registro"); }
+
         $animes = $this->getDoctrine()->getRepository(\App\Entity\Anime::class);
         //$datos = json_decode( $request->getContent(), true); // a traves de ajax
         $anime = $animes->find($id);
@@ -78,7 +79,7 @@ class AnimeController extends AbstractController
             'descripcion' => $anime->getDescripcion(),
             'etiquetas'   => $anime->getEtiquetas(),
                 
-            'portada'     => $anime->getPortada()
+            'imagen'     => $anime->getPortada()
         ];
         
         return new Response(json_encode($respuesta));
@@ -91,57 +92,38 @@ class AnimeController extends AbstractController
     /**
      * @Route("/anime/save", name="save_anime", methods={"POST"})
      */
-    public function saveAnime(Request $request)  // solo Admin
-    {
-        if ($this->getUser() ==NULL) { return $this->redirectToRoute("login_registro"); } 
-        if (!in_array("ADMINISTRADOR",$this->getUser()->getRoles(),TRUE)) { return $this->redirectToRoute("series"); } 
+    public function saveAnime(Request $request){  // solo Admin  
+        if (!Util::esUsuario($this->getUser(),"ADMINISTRADOR")) { return $this->redirectToRoute("series"); } 
         
-        $error=false;
-        $animes = $this->getDoctrine()->getRepository(\App\Entity\Anime::class);
         $entityManager = $this->getDoctrine()->getManager();
+        $animes = $entityManager->getRepository(\App\Entity\Anime::class);
+
         $respuesta = ["ETIQUETAS"    => Util::ETIQUETAS];
-        $video = new \App\Entity\Capitulo();
+
         $nuevoAnime= $request->request->get("nuevo_anime"); // devuelve "on" o null        
         $fichero = $request->files->get('portada');
         $etiquetas = $request->request->get("generos");
-        $animeId=1; // Aqui se tomaria del request al name "anime_id"
+        $animeId=$request->request->get("anime_id");
         
         $descripcion = $request->request->get("descripcion");
-        if ($descripcion==NULL){
-            $error=true;    
-        }      
+        $error=($descripcion==NULL);
         
         $videoUrl = $request->request->get("video_url");
-        if ($videoUrl==NULL){
-            $error=true;
-        }
+        $error=($videoUrl==NULL);
         
         $videoTitulo = $request->request->get("video_titulo");
-        if ($descripcion==NULL){
-            $error=true;
-        }
-        
+        $error=($descripcion==NULL);
+
         $titulo = $request->request->get("titulo");
-        if ($titulo){
-            if ($animes->findOneBy(['titulo'=>$titulo])) {
-                $error = true;
-                $respuesta["error_titulo"] = "Título en uso!";
-            }
-        } else {
-            $error=true;
+        if ($error = $animes->tituloInvalido( $nuevoAnime, $animeId, $titulo)){
+            $respuesta["error_titulo"] = "Título en uso!";
         }
 
         $fechaPublicacion = $request->request->get("fecha_publicacion");
-        if ($fechaPublicacion){
-            $fechaPublicacion = new \DateTime($fechaPublicacion);
-            if ($fechaPublicacion > new \DateTime()){
-                $error=true;
-                $respuesta["error_fecha"] = "Fecha incorrecta!";
-            }
-        } else {
-            $error=true;
+        if ($error= Util::FechaInvalida($fechaPublicacion)){
+            $respuesta["error_fecha"] = "Fecha incorrecta!";
         }
-        
+
         //$error=true;
         if ($error){ 
             $respuesta['nuevo_anime']    = ($nuevoAnime=="on"?"checked":"");
@@ -155,39 +137,36 @@ class AnimeController extends AbstractController
             $respuesta['video_titulo'] = $videoTitulo;
             $respuesta['video_url']    = $videoUrl;
 
+            $respuesta['animes'] = $animes->listar();
+
             return $this->render('anime/add.html.twig', $respuesta);
         }
         // Guardamos ******************************************************
-        if ($fichero) {
-            $nombreFicheroEncriptado = md5(uniqid()).'.'.$fichero->guessExtension();
-            try {
-                $fichero->move( $this->getParameter('ruta_portadas'), $nombreFicheroEncriptado);               
-            } catch (FileException $e) {
-                // ... handle exception if something happens during file upload
-                return $this->redirectToRoute("perfil");
-            }
-        }
-        
+        $nombreFicheroEncriptado = Util::ProcesaFichero($this->getParameter('ruta_portadas'),$fichero);
+
         // Creamos el anime si es el caso, OJO porque esto no es el v�deo
         if ($nuevoAnime){
-            $anime = new \App\Entity\Anime();
-            $anime->setTitulo($titulo);
-            $anime->setDescripcion($descripcion);
-            $anime->setEtiquetas($etiquetas);
-            $anime->setValoracion(3); // por defecto
-            if ($fichero) {
-                $anime->setPortada($this->getParameter('ruta_portadas')."/".$nombreFicheroEncriptado);
-            }
-            $anime->setFechaPublicacion($fechaPublicacion);//->format("Y-m-d H:i:s"));
+            $anime = $animes->crear($animeId,[
+                'titulo'            => $titulo,
+                'descripcion'       => $descripcion,
+                'etiquetas'         => $etiquetas,
+                'fecha_publicacion' => new \DateTime($fechaPublicacion),
+                'fichero'           => $nombreFicheroEncriptado
+            ]);
             $entityManager->persist($anime);
-            $entityManager->flush();
         } else {
-            $anime = $animes->find($animeId);
+            $anime = $animes->actualiza($animeId,[
+                'titulo'      => $titulo,
+                'descripcion' => $descripcion,
+                'etiquetas'   => $etiquetas,
+                'fichero'     => $nombreFicheroEncriptado
+            ]);
         }
-        
+
+        $video = new \App\Entity\Capitulo();
         $video->setIdAnime($anime);
         $video->setUrlVideo($videoUrl);
-        $video->setFechaPublicacion($fechaPublicacion);
+        $video->setFechaPublicacion(new \DateTime($fechaPublicacion));
         $video->setTitulo($videoTitulo);
         // En teor�a lo de los cap�tulos podr�amos hacerlo con un trigger en MySQL
         $entityManager->persist($video);
@@ -198,10 +177,8 @@ class AnimeController extends AbstractController
     /**
      * @Route("/anime/edit/{id}", name="editAnime")
      */
-    public function editAnime($id, Request $request) // solo Admin
-    {
-        if ($this->getUser() ==NULL) { return $this->redirectToRoute("login_registro"); }
-        if (!in_array("ADMINISTRADOR",$this->getUser()->getRoles(),TRUE)) { return $this->redirectToRoute("series"); } 
+    public function editAnime($id, Request $request){ // solo Admin
+        if (!Util::esUsuario($this->getUser(),"ADMINISTRADOR")){ return $this->redirectToRoute("series"); } 
           
         return $this->render('anime/ver.html.twig');
     }
@@ -209,10 +186,8 @@ class AnimeController extends AbstractController
     /**
      * @Route("/anime/remove/{id}", name="removeAnime")
      */
-    public function removeAnime($id) // solo Admin
-    {
-        if ($this->getUser() ==NULL) { return $this->redirectToRoute("login_registro"); }
-        if (!in_array("ADMINISTRADOR",$this->getUser()->getRoles(),TRUE)) { return $this->redirectToRoute("series"); } 
+    public function removeAnime($id) { // solo Admin
+        if (!Util::esUsuario($this->getUser(),"ADMINISTRADOR")){ return $this->redirectToRoute("series"); } 
   
         return $this->render('anime/index.html.twig');
     }
@@ -220,11 +195,37 @@ class AnimeController extends AbstractController
     /**
      * @Route("/anime/info/{id}", name="infoAnime")
      */
-    public function infoAnime($id)
-    {
-        if ($this->getUser() ==NULL) { return $this->redirectToRoute("login_registro"); }
+    public function infoAnime($id){
+        if (!Util::esUsuario($this->getUser(),"")){ return $this->redirectToRoute("login_registro"); }
           
-        return $this->render('usuario/perfil.html.twig');
+        //return $this->render('usuario/perfil.html.twig');
+        $animes = $this->getDoctrine()->getRepository(\App\Entity\Anime::class);
+        //$datos = json_decode( $request->getContent(), true); // a traves de ajax
+        $anime = $animes->find($id);
+        $capitulos =[];
+
+        foreach ($anime->getCapitulos() as $capitulo){
+            $capitulos[]=[
+                "capitulo_id"     => $capitulo->getId(),
+                "capitulo_titulo" => $capitulo->getTitulo(),
+                "capitulo_url"    => $capitulo->getUrlVideo() 
+            ];
+        }
+
+        $respuesta =[
+            'titulo'      => $anime->getTitulo(),
+            'descripcion' => $anime->getDescripcion(),
+            'etiquetas'   => $anime->getEtiquetas(),
+                
+            //'imagen'     => $anime->getPortada(),
+            'capitulos'  => $capitulos
+        ];
+        
+        return new Response(json_encode($respuesta));
+        /*return new JsonResponse(
+            $anime->getCapitulos(),
+            JsonResponse::HTTP_CREATED
+        );*/ 
     }
 
     /**
