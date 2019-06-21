@@ -1,0 +1,8 @@
+# config/validator/validation.yaml
+App\Entity\Usuario:
+    properties:
+        retrato:
+            - File:
+                maxSize: 1024k
+                mimeTypes: [image/jpg, image/png, image/jpeg]
+                mimeTypesMessage: Solamente son posibles los formatos jpg y png

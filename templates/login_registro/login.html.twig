@@ -1,0 +1,176 @@
+{% extends 'base.html.twig' %}
+
+{% block titulo %}Login/Registro{% endblock %}
+{% block estilos %}
+    <style>
+        .formulario_principal {          
+            background:  white;
+            width: var(--ancho);
+            margin: auto;
+            padding: 0 5mm 5mm 5mm;
+            display: inline-flex;
+            border: 1mm solid gray;
+        }
+        
+        .formulario_principal input[type="text"],input[type="email"], input[type="password"] {
+            box-sizing: border-box;
+            height: 3.4em;
+            padding: .8em 1em;
+            width: 100%;
+            border: .1em solid #a5a2a2;
+            font-size: 1em;
+            line-height: 1.8;
+        }
+    
+        .formulario_registro {
+            margin: 5mm;
+            padding-right: 5mm;
+            width: 60%;
+            border-right: 1px solid lightgray;
+        }
+        
+        .formulario_login {
+            margin: 5mm 5mm 5mm 0mm;       
+        }
+        
+        h1 {
+            margin-bottom: 0;
+        }
+        
+        h3 {
+            color: gray;
+            font-weight: 100;
+            margin-top: 2mm;
+            margin-bottom: 2mm;
+        }
+        
+        .fr_izquierda {
+            width: 50%;
+            margin-right: 1.5mm;
+        }
+        
+        .fr_derecha {
+            width: 50%;
+            margin-left: 1.5mm;
+        }
+        
+        .fr_campos {
+            display: flex;
+            padding-top: 2mm;
+        }
+        
+        button {
+            box-sizing: border-box;
+            height: 3.4em;
+            padding: .8em 1em;
+            width: 100%;
+            border: .1em solid #a5a2a2;
+            font-size: 1em;
+            line-height: 1.8;
+            cursor: pointer;
+            box-shadow: 1mm 1mm 1mm grey, 0.5mm 0.5mm 1mm white inset;
+            transition: box-shadow 200ms, background 200ms, color 200ms;   
+            border-radius: 1mm;
+        }
+        
+        button:hover {
+            color: white;
+            background: darkgrey;
+            box-shadow: 0.5mm 0.5mm 0.5mm grey, 0.5mm 0.5mm 1mm white inset;            
+        }
+        
+        .forgot-password-link {
+            width: 210%;
+        }
+        
+        .info {
+            font-size: .675rem;
+        }
+        
+        .error {
+            color: red;
+        }
+        
+        @keyframes warning {
+            0%   {border-color:#a5a2a2;border-width: 1px;padding: .8em 1em;}
+            50%  {border-color:red;border-width: 1mm;padding: .8mm 0.8em;}
+            100% {border-color:#a5a2a2;border-width: 1px;padding: .8em 1em;}
+        }
+    </style>
+{% endblock %}
+    
+{% block cuerpo %}
+    <div class="formulario_principal fuente_menu noselect">
+        <div class="formulario_registro">
+            <form action="/registro" method="POST">
+            <h1>Registra Cuenta</h1>
+            <h3>¡Únete a Anime!¡Se tarda sólo un clic!</h3>
+            <div class="fr_campos">
+                <div class="fr_izquierda">
+                    <h3>Nombre</h3>
+                    <input id="name" name="name" {% if last_info['name'] is defined %}value="{{ last_info['name'] }}"{% endif %} type="text" required="required">
+                    {#<span id="errorNombre" class="info error"> Nombre incorrecto</span>#}
+                    <h3>Correo electrónico</h3>
+                    <input {% if error_email is defined %}style="animation-name: warning;animation-duration: 1s;animation-iteration-count: infinite;"{% endif %} 
+                        type="email" id="email" name="email" {% if last_info['name'] is defined %}value="{{ last_info['email'] }}"{% endif %} required="required" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{1,}$" data-pattern-mismatch-message="Usa una dirección de correo válida." aria-invalid="true" autocomplete="off">
+                    {% if error_email is defined %}<span id="errorEmail" class="info error">{{ error_email }}</span>{% endif %}
+                    <h3>Contraseña</h3>
+                    <input id="password" name="password" value="" type="password" required="required" autocomplete="off">
+                    {#<span id="errorPassword" class="info error"> Contraseña incorrecta</span>#}
+                </div>
+                <div class="fr_derecha">
+                    <h3>Apellidos</h3>
+                    <input id="surname" name="surname" {% if last_info['name'] is defined %}value="{{ last_info['surname'] }}"{% endif %} type="text" required="required">
+                    {#<span id="errorApellidos" class="info error"> Apellidos incorrectos </span>#}
+                    <h3>Alias</h3>
+                    <input {% if error_alias is defined %}style="animation-name: warning;animation-duration: 1s;animation-iteration-count: infinite;"{% endif %}
+                        id="username" name="username" {% if last_info['name'] is defined %}value="{{ last_info['username'] }}"{% endif %} type="text" required="required">
+                    {% if error_alias is defined %}<span id="errorAlias" class="info error">{{ error_alias }}</span>{% endif %}
+                    <h3>&nbsp;</h3>
+                    <button type="submit">Crear cuenta</button>
+                    <div style="margin-top: 5mm;
+    width: 100%;
+    text-align: right;
+    align-items: center;
+    display: flex;"><input type="checkbox" name="terms" required="required">
+                        <span style="width: max-content;" class="info forgot-password-link"> Aceptar <a href="/resetpw" tabindex="3">términos de servicio</a> y <a href="/resetpw" tabindex="3">política de privacidad</a></span>
+                    </div>
+                    {# <span id="errorTerminos" class="info error"> Haz clic en la casilla si estás conforme</span> #}
+                </div>                
+            </div>
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+            </form>
+        </div>
+        <div class="formulario_login">
+            <form method="POST">
+                <h1>Inicia Sesión</h1>
+                <h3>¿Ya tienes cuenta? Inicia sesión más abajo</h3>
+                <div style="margin-top: 6mm;">
+                    <h3>Correo electrónico</h3>
+                    <input {% if erroresLogin['email'] is defined %}style="animation-name: warning;animation-duration: 1s;animation-iteration-count: infinite;"{% endif %}
+                        type="email" id="email" value="{{ last_username }}" name="email" required autofocus pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{1,}$" data-pattern-mismatch-message="Usa una dirección de correo válida." aria-invalid="true">
+                    <span class="info error">{% if erroresLogin['email'] is defined %}{{ erroresLogin['email'] }}{% endif %}</span>
+                    <div style="
+                        display: flex;
+                        align-items: center;
+                    ">
+                        <h3>Contraseña</h3>
+                        <div class="relleno"></div>
+                        <span class="info forgot-password-link"><a href="/resetpw" tabindex="3">¿Has olvidado tu contraseña?</a></span>
+                    </div>
+                    <input {% if erroresLogin['password'] is defined %}style="animation-name: warning;animation-duration: 1s;animation-iteration-count: infinite;"{% endif %}
+                        id="password" name="password" type="password" required>
+                    <span class="info error">{% if erroresLogin['password'] is defined %}{{ erroresLogin['password'] }}{% endif %}</span>
+                    <h3>&nbsp;</h3>
+                    <button type="submit">Iniciar sesión</button>
+                    {% if error is defined %}{{ error.message }}{% endif %}
+                </div>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block codigo %}
+    
+{% endblock %}

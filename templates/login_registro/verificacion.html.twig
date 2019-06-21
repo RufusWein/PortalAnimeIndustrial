@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block titulo %}Login/Registro{% endblock %}
+{% block estilos %}
+    <style>
+        .formulario_principal {          
+            background:  white;
+            width: 100%;
+            margin: 10%;
+            padding: 0 5mm 5mm 5mm;
+            display: inline-flex;
+            border: 1mm solid gray;
+            align-items: center;
+        }
+        
+        .formulario_principal > span {
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            margin-bottom: 0;
+        }
+        
+        .error {
+            color: red;
+        }
+        
+    </style>
+{% endblock %}
+    
+{% block cuerpo %}
+    <div class="formulario_principal fuente_menu noselect">
+        <span>{{ mensaje | raw }}</span>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    
+{% endblock %}

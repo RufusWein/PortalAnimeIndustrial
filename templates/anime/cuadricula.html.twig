@@ -1,0 +1,172 @@
+{# empty Twig template #}
+<style>
+    .table {
+        table-layout:fixed;
+    }
+    .anime_marco {
+        padding: .5cm 6mm 5mm 6mm;
+        word-wrap: break-word;
+    }
+    
+    .anime_info {
+        width: 3.9cm;
+        text-align: center;
+        border: 1px lightgray solid;
+        padding-top: 1mm;
+        transition: transform 0.3s;
+        position: relative;
+    }
+    
+    .anime_info:hover {
+        transform: scale(1.1);
+        cursor: pointer;
+    }
+    
+    .anime_portada {
+        height: 5cm;
+        background-size: cover;
+        margin: 0 1mm;
+    }
+    
+    .td {
+        word-wrap: break-word;
+    }
+    
+    .anime_titulo {
+        display: block;
+        /*transform: scale(1, 2);
+        margin-top: 1.25em;*/
+        font-weight: bolder;
+        word-wrap: break-word;
+        height: 2.5em;
+    }
+    
+    .anime_videos{
+        width: 100%;
+        position: absolute;
+        margin-top: 2mm;
+    }
+    
+    .anime_videos > span {
+        background: lightgray;
+        border: .5mm gray solid;
+        border-radius: 1.5mm;
+        padding: 1mm;
+    }
+    
+    .add_anime {
+        width: 3cm;
+        height: 3.1cm;
+        text-align: center;
+        border: 1px lightgray dashed;
+        transition: transform 0.3s;
+        display: table;
+        padding: 1.5cm 4.5mm; 
+    }
+    
+    .add_anime > a > span {
+        display: table-cell;
+        font-weight: bolder;
+        word-wrap: break-word;
+        vertical-align: middle;
+        font-size: 2em;
+        background: lightgray;
+        border-radius: 5mm;
+        border: 1px gray solid;
+        transition: color .3s, background .3s;
+    }
+    
+    .add_anime > a {
+        color: inherit;
+        background: inherit;
+        text-decoration: none;
+    }
+    
+    .add_anime > a > span:hover {
+        color : white;
+        background: gray;
+        border: 1px lightgrey solid;
+        cursor: pointer;
+    }    
+</style>
+{#
+{%  set cuadricula=[
+    { id_anime   : -1 },
+    { id_anime   : 123,
+      titulo     : "ONE PUCH MAN",
+      portada    : "http://es.web.img3.acsta.net/c_216_288/pictures/17/02/27/17/41/046707.jpg",
+      num_videos : 1 },
+    { id_anime   : 123,
+      titulo     : "ONEPUCHMANDSFSDFDSF ",
+      portada    : "http://es.web.img3.acsta.net/c_216_288/pictures/17/02/27/17/41/046707.jpg",
+      num_videos : 10 },
+    { id_anime   : 123,
+      titulo     : "ONE PUCH MAN",
+      portada    : "http://es.web.img3.acsta.net/c_216_288/pictures/17/02/27/17/41/046707.jpg",
+      num_videos : 1 },
+    { id_anime   : 123,
+      titulo     : "ONE PUCH MAN",
+      portada    : "http://es.web.img3.acsta.net/c_216_288/pictures/17/02/27/17/41/046707.jpg",
+      num_videos : 1 },
+    { id_anime   : 123,
+      titulo     : "ONE PUCH MAN",
+      portada    : "http://es.web.img3.acsta.net/c_216_288/pictures/17/02/27/17/41/046707.jpg",
+      num_videos : 13 },
+    { id_anime   : 123,
+      titulo     : "ONEPUCHMANDSFSDFDSF ",
+      portada    : "http://es.web.img3.acsta.net/c_216_288/pictures/17/02/27/17/41/046707.jpg",
+      num_videos : 1 },
+    { id_anime   : 123,
+      titulo     : "ONE PUCH MAN",
+      portada    : "http://es.web.img3.acsta.net/c_216_288/pictures/17/02/27/17/41/046707.jpg",
+      num_videos : 1 },
+    { id_anime   : 123,
+      titulo     : "ONE PUCH MAN",
+      portada    : "http://es.web.img3.acsta.net/c_216_288/pictures/17/02/27/17/41/046707.jpg",
+      num_videos : 1 },
+] %}
+#}
+
+{% set administrador=0 %}
+{% if app.user != null %}
+    {% if "ADMINISTRADOR" in app.user.roles %}
+        {% set administrador=1 %}
+    {% endif %}
+{% endif %}    
+
+{% if modo_agregar is not defined %}
+    {% set modo_agregar=0 %}
+{% endif %}
+    
+<table id="cuadricula">
+{% set num_columnas=num_columnas-1 %}
+{% set columnas=num_columnas %}
+{% for anime in cuadricula %}
+    {% if administrador and anime.id_anime == -1 and modo_agregar %}
+        {% if columnas == num_columnas %}<tr class="fila">{% endif  %}
+        <td class="anime_marco">
+            <div class="add_anime">
+                <a href="anime/add"><span title="Agregar nuevo vídeo de anime">Nuevo<br>Vídeo</span></a>
+            </div>
+        </td>
+        {% set columnas = columnas - 1 %}
+        {% if columnas <0 %}</tr>{% set columnas=num_columnas %}{% endif %}
+    {% elseif anime.id_anime!=-1 %}
+        {% if columnas == num_columnas %}<tr class="fila">{% endif  %}
+        <td class="anime_marco">
+            <div class="anime_info">
+                <div class="anime_videos">
+                    <span>{{ anime.num_videos }} vídeo{% if anime.num_videos > 1 %}s{% endif %}</span>
+                </div>
+                <div class="anime_portada" style="background-image : url({{ anime.portada }})"></div>
+                <span class="anime_titulo">{{ anime.titulo }}</span>
+            </div>
+        </td>
+        {% set columnas = columnas - 1 %}
+        {% if columnas <0 %}</tr>{% set columnas=num_columnas %}{% endif %}
+    {% endif %}
+{% endfor %}
+{% if columnas>0 and columnas<num_columnas %}
+</tr>
+{% endif %}
+</table>

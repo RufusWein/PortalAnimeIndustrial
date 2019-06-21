@@ -1,0 +1,370 @@
+{% extends 'base.html.twig' %} {% block titulo %}Añadir vídeo{% endblock %} {% block estilos %}
+<style>
+    .formulario_principal {
+        background: white;
+        width: var(--ancho);
+        margin: 5mm auto 5mm auto;
+        padding: 5mm 5mm 5mm 5mm;
+        border: 1mm solid gray;
+    }
+    
+    .formulario_principal>div:first-child {
+        display: flex;
+    }
+    
+    body>div.cuerpo>div.contenido>form>div:nth-child(2) {
+        border-top: 1px solid lightgray;
+        padding-top: 4mm;
+        margin-top: 4mm;
+        text-align: right;
+    }
+    
+    .form_izquierdo {
+        /*background: red;*/
+        width: 35%;
+        border-right: 1px solid lightgray;
+        margin-right: 5mm;
+    }
+    
+    .form_derecho {
+        /*background: blue;*/
+        width: 65%;
+    }
+    
+    .form_derecho img {
+        width: 20px;
+        height: 20px;
+        vertical-align: middle;
+        margin-right: 2mm;
+    }
+    
+    .form_derecho div {
+        width: 100%;
+    }
+    
+    .form_derecho input {
+        box-sizing: border-box;
+        height: 3.4em;
+        padding: .8em 1em;
+        border: .1em solid #a5a2a2;
+        font-size: 1em;
+        line-height: 1.8;
+    }
+    
+    .infoi {
+        width: 80%;
+        display: inline-block;
+    }
+    
+    .dato {
+        width: 20%;
+        display: inline-block;
+        text-align: right;
+    }
+    
+    .info {
+        width: 40%;
+        display: inline-block;
+        color: gray;
+        font-weight: 100;
+        margin-top: 2mm;
+        margin-bottom: 2mm;
+        font-size: 1.17em;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+    }
+    
+    .subrayado {
+        width: 100%;
+        border-bottom: 1px lightgray solid;
+    }
+    
+    .larga {
+        width: 59%;
+    }
+    
+    .portada {
+        width: 80%;
+        height: auto;
+        cursor: pointer;
+        margin-right: 5mm;
+        margin-top: 7mm;
+    }
+    
+    .marco {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .contenedor {
+        margin-right: 5mm;
+    }
+    
+    .contenedor>div {
+        margin-left: 5%;
+    }
+    
+    #portada {
+        visibility: hidden;
+    }
+    
+    button {
+        box-sizing: border-box;
+        height: 3.4em;
+        padding: .8em 1em;
+        width: 30%;
+        border: .1em solid #a5a2a2;
+        font-size: 1em;
+        line-height: 1.8;
+        cursor: pointer;
+        box-shadow: 1mm 1mm 1mm grey, 0.5mm 0.5mm 1mm white inset;
+        transition: box-shadow 200ms, background 200ms, color 200ms;
+        border-radius: 1mm;
+    }
+    
+    button:hover {
+        color: white;
+        background: darkgrey;
+        box-shadow: 0.5mm 0.5mm 0.5mm grey, 0.5mm 0.5mm 1mm white inset;
+    }
+    
+    .info_error {
+        font-size: .675rem;
+        color: red;
+    }
+    
+    @keyframes warning {
+        0% {
+            border-color: #a5a2a2;
+            border-width: 1px;
+            padding: .8em 1em;
+        }
+        50% {
+            border-color: red;
+            border-width: 1mm;
+            padding: .8mm 0.8em;
+        }
+        100% {
+            border-color: #a5a2a2;
+            border-width: 1px;
+            padding: .8em 1em;
+        }
+    }
+    
+    .opcion_nuevo {
+        display: flex;
+    }
+    
+    .opcion_nuevo>input {
+        cursor: pointer;
+    }
+    
+    .opcion_nuevo>span {
+        font-size: 1.5em;
+        margin-top: auto;
+        margin-bottom: auto;
+        margin-left: 1mm;
+    }
+    
+    input[type="date"] {
+        font-size: 1.3em;
+        cursor: pointer;
+        width: 32%;
+    }
+    
+    .descripcion_box {
+        display: flex;
+    }
+    
+    .descripcion_box>textarea {
+        resize: none;
+        width: 57.3%;
+        margin-left: 1.1mm;
+        margin-top: 1.1mm;
+        font-size: 1.17em;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    
+    #series {
+        visibility: hidden;
+    }
+    
+    #series>div {
+        display: flex;
+    }
+    
+    #series>div>div {
+        border: 1px #a5a2a2 solid;
+        max-height: 13.6em;
+        width: 59%;
+        overflow-y: auto;
+    }
+    
+    #series ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    #series li {
+        box-sizing: border-box;
+        height: 3.4em;
+        padding: .8em 1em;
+        font-size: 1.17em;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        line-height: 1.8;
+        cursor: pointer;
+    }
+    
+    li[seleccionada="1"] {
+        background: black;
+        /*#a5a2a2;*/
+        color: white;
+    }
+</style>
+{% endblock %} {% block cuerpo %}
+<form class="formulario_principal fuente_menu noselect" action="/anime/save" method="POST" enctype="multipart/form-data">
+    <div>
+        <div class="form_izquierdo">
+            <div class="marco">
+                <img id="imagen" class="portada" title="Haz clic aquí para seleccionar una imagen de portada" src="http://icons.iconarchive.com/icons/media-design/hydropro/256/HP-Pictures-Folder-icon.png" onContextMenu="return false;">
+                <input type="file" id="portada" name="portada" accept=".jpg, .jpeg, .png">
+            </div>
+            <div class="contenedor">
+                <span class="subrayado info">Valoración</span><br> {{ include('/valorador.html.twig') }}
+            </div>
+            <div class="contenedor">
+                <span class="subrayado info">Etiquetas</span><br>
+                <div>{{ include('/etiquetas.html.twig',{ name: 'generos', seleccionadas: etiquetas_sel , "ETIQUETAS" : ETIQUETAS }) }}</div>
+            </div>
+        </div>
+        <div class="form_derecho">
+            <div class="opcion_nuevo">
+                <input onclick="opcionSeries(this);" name="nuevo_anime" type="checkbox" {{ nuevo_anime }}><span class="status">Nueva Serie</span>
+            </div>
+
+            <h1>Información</h1>
+            <div>
+                <span class="info">Título</span>
+                <input {% if error_titulo is defined %} style="animation-name: warning;animation-duration: 1s;animation-iteration-count: infinite;" {% endif %} name="titulo" value="{{ titulo }}" required="required"> {% if error_titulo is defined %}&nbsp;&nbsp;
+                <span class="info_error">{{ error_titulo }}</span>{% endif %}
+            </div>
+
+            <div>
+                <span class="info">Fecha publicación</span>
+                <input type="date" value="{{ fecha_publicacion }}" min="1976-01-01" max="{{ 'now' |date('Y-m-d') }}" {% if error_fecha is defined %} style="animation-name: warning;animation-duration: 1s;animation-iteration-count: infinite;" {% endif %} name="fecha_publicacion"
+                    required="required"> {% if error_fecha is defined %}&nbsp;&nbsp;
+                <span class="info_error">{{ error_fecha }}</span>{% endif %}
+            </div>
+
+            <div class="descripcion_box">
+                <span class="info">Descripción</span>
+                <textarea name="descripcion" rows="6" maxlength="255" required="required">
+                    {{- descripcion -}}
+                </textarea>
+            </div>
+            <br>
+            <h1>Vídeo</h1>
+            <div>
+                <span class="info">Nombre</span>
+                <input name="video_titulo" class="larga" value="{{ video_titulo }}" required="required">
+            </div>
+            <div>
+                <span class="info">URL</span>
+                <input name="video_url" type="url" pattern="https?://.+" class="larga" value="{{ video_url }}" required="required">
+            </div>
+            <br>
+            <div id="series">
+                <h1>Series</h1>
+                <div>
+                    <span class="info">Selecciona Serie</span>
+                    <div>
+                        <ul id="lista_series">
+                            {% for anime in animes %} {% if anime.id_anime!=-1 %}
+                            <li seleccionada="0" id="serie{{ anime.id_anime }}" onclick="seleccionaSerie(this,{{ anime.id_anime }});">
+                                {{- anime.titulo -}}
+                            </li>
+                            {% endif %} {% endfor %}
+                        </ul>
+                        <input type="hidden" id="anime_id" name="anime_id" value="{{ animes[1].id_anime }}">
+                    </div>
+                </div>
+            </div>
+            <br>
+        </div>
+    </div>
+    <div>
+        <button type="submit">Guardar</button>
+    </div>
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+</form>
+{% endblock %} {% block codigo %}
+<script type="text/javascript">
+    var imagen = document.getElementById("imagen");
+
+    function ajax(url, valor, metodo, callback) {
+        metodo = metodo.toUpperCase();
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                callback(this.responseText);
+            }
+        };
+        if (metodo == "POST" || metodo == "GET") {
+            console.log(metodo);
+            xhttp.open(metodo, url, true);
+            if (metodo == "GET") {
+                xhttp.send();
+            } else {
+                xhttp.setRequestHeader("Content-type", "application/json");
+                xhttp.send(valor);
+            }
+        }
+    }
+
+    imagen.addEventListener("click", function() {
+        document.getElementById("portada").click();
+    });
+
+    document.getElementById("portada").addEventListener("change", function(event) {
+        var fichero = event.target.files[0],
+            reader = new FileReader();
+
+        reader.onload = function(event) {
+            imagen.src = event.target.result;
+        };
+        reader.readAsDataURL(fichero);
+    });
+
+    function opcionSeries(checkbox) {
+        var seriesDom = document.getElementById("series");
+        if (checkbox.checked) { // ocultamos series
+            seriesDom.style.visibility = "hidden";
+        } else { // mostramos series
+            seriesDom.style.visibility = "visible";
+            seriesDom.scrollIntoView(true);
+            let animeId = document.getElementById("anime_id").value;
+            seleccionaSerie(document.getElementById("serie" + animeId), animeId);
+        }
+    }
+
+    function seleccionaSerie(serieDom, id) {
+        document.getElementById("lista_series").childNodes.forEach((nodo) => {
+            if (nodo.tagName == "LI") {
+                if (nodo.id == serieDom.id) nodo.setAttribute("seleccionada", "1")
+                else nodo.setAttribute("seleccionada", "0");
+            }
+
+        });
+        document.getElementById("anime_id").value = id; //JSON.stringify({ "anime_id" : id })
+        ajax("/anime/" + id, "{ 'id' : '" + id + "' }", "POST", function(datos) {
+            let anime = JSON.parse(datos);
+            //documet.getElementById("").;
+
+            console.log(anime["titulo"]);
+            console.log("listo");
+
+        });
+    }
+</script>
+{% endblock %}

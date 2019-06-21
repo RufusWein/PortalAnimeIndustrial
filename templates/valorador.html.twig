@@ -1,0 +1,49 @@
+<style>
+    .checked {
+        color: orange;
+    }
+    
+    #valorador {
+        display: inline-flex;
+        height: 2.5em;
+        width: 100%;
+        padding-left: 24%;
+    }
+    
+    #valorador>span {
+        margin-top: auto;
+        margin-bottom: auto;
+        font-size: 1.5em;
+        transition: font-size 0.1s;
+        padding-left: 2%;
+    }
+    
+    #valorador>span:hover {
+        font-size: 2em;
+        cursor: pointer;
+    }
+</style>
+<div id="valorador">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <span class="fa fa-star checked" title="mala" onclick="valora(1);"></span>
+    <span class="fa fa-star checked" title="floja" onclick="valora(2);"></span>
+    <span class="fa fa-star checked" title="buena" onclick="valora(3);"></span>
+    <span class="fa fa-star" title="recomendable" onclick="valora(4);"></span>
+    <span class="fa fa-star" title="excelente" onclick="valora(5);"></span>
+    <input name="valoracion" id="valoracion" type="hidden" value="3">
+</div>
+<script type="text/javascript">
+    function valora(valor) {
+        var i = 0;
+        document.getElementById("valorador").childNodes.forEach((nodo) => {
+            if (nodo.nodeName == "SPAN") {
+                if (i < valor) {
+                    nodo.className = "fa fa-star checked";
+                } else {
+                    nodo.className = "fa fa-star";
+                }
+                i++;
+            }
+        });
+    }
+</script>

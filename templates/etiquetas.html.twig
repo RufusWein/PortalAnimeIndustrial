@@ -1,0 +1,62 @@
+<style>
+    .opciones__ {
+        display: table;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .opcion__ {
+        display: block;
+        float: left;
+        margin: 1mm;
+        cursor: pointer;
+        border-radius: 1mm;
+    }
+    
+    .opcion__>* {
+        vertical-align: middle;
+        cursor: pointer;
+        pointer-events: none;
+    }
+    
+    .opcion__>label {
+        margin-right: 1mm;
+    }
+    
+    .opcion__[value="1"] {
+        background: #5eb5e0;
+        color: white;
+    }
+</style>
+<ul class="opciones__">
+    {%  if seleccionadas is not defined %}
+        {% set seleccionadas = '' %}
+    {% endif %}
+    {% for etiqueta in ETIQUETAS %}
+    {% set tag = etiqueta | replace({ 'á':'a', 'é':'e', 'í':'i', 'ó':'o', 'ú':'u' }) %}
+    <li class="opcion__" id="{{ tag }}" onclick="document['selecciona{{ name }}'](event);" 
+    	value="{{  (tag in seleccionadas) ? '1' : '0'}}">
+        <input id="opcion{{ name }}{{ tag }}" type="checkbox" title="{{ etiqueta }}"
+        {{  (tag in seleccionadas) ? 'checked' : '' }}>        
+        <label>{{ etiqueta }}</label>
+    </li>
+    {% endfor %}
+</ul>
+<input name="{{ name }}" id="{{ name }}" type="hidden" style="display:none" value="{{ seleccionadas }}">
+<script type="text/javascript">
+    document["selecciona{{ name }}"] = function(evento) {
+
+        var opcion = evento.target,
+            etiquetas = document.getElementById("{{ name }}"),
+            checkbox = document.getElementById("opcion{{ name }}" + opcion.id);
+        opcion.value = checkbox.checked = checkbox.checked !== true;
+
+        if (checkbox.checked) {
+            etiquetas.value += " " + opcion.id + " ";
+        } else {
+            etiquetas.value = generos.value.replace(" " + opcion.id + " ", "");
+        }
+
+    };
+</script>

@@ -1,0 +1,219 @@
+{% extends 'base.html.twig' %}
+
+{% block titulo %}Perfil{% endblock %}
+
+{% block estilos %}
+    <style>
+        .formulario_principal {          
+            background:  white;
+            width: var(--ancho);
+            margin: 2cm auto 2cm auto;
+            padding: 5mm 5mm 5mm 5mm;
+            border: 1mm solid gray;
+        }
+
+        .formulario_principal > div:first-child {
+            display: flex;
+        }
+        
+        body > div.cuerpo > div.contenido > form > div:nth-child(2){
+            border-top: 1px solid lightgray;
+            padding-top: 4mm;
+            margin-top: 4mm;
+            text-align: right;
+        }
+        
+        .form_izquierdo {
+            /*background: red;*/
+            width: 35%;
+            border-right: 1px solid lightgray;
+            margin-right: 5mm;
+        }
+        
+        .form_derecho {
+            /*background: blue;*/
+            width: 65%;
+        }
+        
+        .form_derecho img {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 2mm;
+        }
+        
+        .form_derecho div {
+            width: 100%;
+        }
+        
+        .form_derecho input {
+            box-sizing: border-box;
+            height: 3.4em;
+            padding: .8em 1em;
+            border: .1em solid #a5a2a2;
+            font-size: 1em;
+            line-height: 1.8;
+        }
+        
+        .infoi {
+            width: 80%;
+            display: inline-block;
+        }
+        
+        .dato {
+            width: 20%;
+            display: inline-block;
+            text-align: right;
+        }
+        
+        .status {
+            font-size: 1.5em;
+        }
+        
+        .info {
+            width: 40%;
+            display: inline-block;
+            color: gray;
+            font-weight: 100;
+            margin-top: 2mm;
+            margin-bottom: 2mm;
+            font-size: 1.17em;
+            margin-block-start: 1em;
+            margin-block-end: 1em;
+        }
+        
+        .subrayado {
+            width: 100%;
+            border-bottom: 1px lightgray solid;
+        }
+        
+        .larga {
+            width: 59%;
+        }
+        
+        .retrato {
+            width: 80%;
+            height: auto;
+            cursor: pointer;
+            margin-right: 5mm;
+            margin-top: 7mm;
+        }
+        
+        .marco {
+            width: 100%;
+            text-align: center;
+        }
+        
+        .contenedor {
+            margin-right: 5mm;
+        }
+        
+        #retrato {
+            visibility: hidden;
+        }
+        
+        button {
+            box-sizing: border-box;
+            height: 3.4em;
+            padding: .8em 1em;
+            width: 30%;
+            border: .1em solid #a5a2a2;
+            font-size: 1em;
+            line-height: 1.8;
+            cursor: pointer;
+            box-shadow: 1mm 1mm 1mm grey, 0.5mm 0.5mm 1mm white inset;
+            transition: box-shadow 200ms, background 200ms, color 200ms;   
+            border-radius: 1mm;
+        }
+        
+        button:hover {
+            color: white;
+            background: darkgrey;
+            box-shadow: 0.5mm 0.5mm 0.5mm grey, 0.5mm 0.5mm 1mm white inset;            
+        }
+                
+        .info_error {
+            font-size: .675rem;
+            color: red;
+        }
+        
+        @keyframes warning {
+            0%   {border-color:#a5a2a2;border-width: 1px;padding: .8em 1em;}
+            50%  {border-color:red;border-width: 1mm;padding: .8mm 0.8em;}
+            100% {border-color:#a5a2a2;border-width: 1px;padding: .8em 1em;}
+        }
+    </style> 
+{% endblock %}
+
+{% block cuerpo %}
+    <form class="formulario_principal fuente_menu noselect" action="/edit" method="POST" enctype="multipart/form-data">
+        <div>
+            <div class="form_izquierdo">
+                <div class="marco">
+                    <img id="imagen" class="retrato" title="Haz clic aquí para seleccionar una imagen" 
+                         {% if app.user.retrato == null %}src="https://upload.wikimedia.org/wikipedia/commons/d/d3/User_Circle.png"{% else %}
+                            src="{{ app.user.retrato }}"
+                         {% endif %} onContextMenu="return false;">
+                    <input type="file" id="retrato" name="retrato" accept=".jpg, .jpeg, .png">
+                </div>
+                <div class="contenedor"><span class="subrayado info">Amigos</span></div>
+                <div class="contenedor">
+                    <span class="subrayado info">Estadisticas</span><br>
+                    <div><span class="infoi">Número de comentarios</span><span class="dato">1</span></div>
+                    <div><span class="infoi">Hilos publicados</span><span class="dato">1</span></div>
+                    <div><span class="infoi">Número de accesos diarios</span><span class="dato">1</span></div>
+                    <div><span class="infoi">Tiempo trasncurrido de la sesión</span><span class="dato">1</span></div>
+                </div>
+            </div>
+            <div class="form_derecho">
+                <span class="status"><img src="https://upload.wikimedia.org/wikipedia/commons/d/d3/User_Circle.png">Conectado</span>
+                <h1>Información</h1>
+                <div><span class="info">Categoría</span><span>{% for rol in app.user.roles %} {{ rol }}{% if not loop.last %},{% endif %} {% endfor %}</span></div>
+                <div><span class="info">Nombre usuario</span><input 
+                        {% if error_alias is defined %}style="animation-name: warning;animation-duration: 1s;animation-iteration-count: infinite;"{% endif %} 
+                        name="alias" value="{{ app.user.alias }}" required="required">{% if error_alias is defined %}&nbsp;&nbsp;<span class="info_error">{{ error_alias }}</span>{% endif %}</div>
+                <div><span class="info">Cambiar contraseña</span><input 
+                        {% if error_password is defined %}style="animation-name: warning;animation-duration: 1s;animation-iteration-count: infinite;"{% endif %}
+                        name="password" type="password" autocomplete="off">{% if error_password is defined %}&nbsp;&nbsp;<span class="info_error">{{ error_password }}</span>{% endif %}</div>
+                <div><span class="info">Repetir contraseña</span><input name="repassword" type="password" autocomplete="off"></div>
+                <div><span class="info">Email</span><input 
+                        {% if error_email is defined %}style="animation-name: warning;animation-duration: 1s;animation-iteration-count: infinite;"{% endif %} 
+                        type="email" class="larga" value="{{ app.user.email }}" required="required" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{1,}$" data-pattern-mismatch-message="Usa una dirección de correo válida." aria-invalid="true" autocomplete="off"></div>
+                                {% if error_email is defined %}<div><span style="width: 40%; display: inline-block;">                            
+                            </span><span class="info_error">{{ error_email }}</span></div>{% endif %}
+                <br>
+                <h1>Personal</h1>
+                <div><span class="info">Nombre</span><input name="nombre" class="larga" value="{{ app.user.nombre }}"></div>
+                <div><span class="info">Apellidos</span><input name="apellidos" class="larga" value="{{ app.user.apellidos }}"></div>
+                <br>
+                <h1>Extra</h1>
+                <div><span class="info">Anime favorito</span><input name="animes_favoritos" class="larga" value="{{ app.user.animesfavoritos }}"></div>
+                <div><span class="info">Intereses</span><input name="intereses" class="larga" value="{{ app.user.intereses }}"></div>
+            </div>
+        </div>
+        <div>
+            <!--<h3>&nbsp;</h3>-->
+            <button type="submit">Guardar</button>
+        </div>
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+    </form>                
+{% endblock %}
+
+{% block codigo %}
+<script type="text/javascript">
+    var imagen=document.getElementById("imagen");
+    imagen.addEventListener("click",function(){
+       document.getElementById("retrato").click();
+    });
+    
+    document.getElementById("retrato").addEventListener("change", function(event){
+        var fichero = event.target.files[0],
+            reader  = new FileReader();
+        
+        reader.onload = function(event) {
+            imagen.src = event.target.result;
+        };
+        reader.readAsDataURL(fichero);        
+    });
+</script>
+{% endblock %}

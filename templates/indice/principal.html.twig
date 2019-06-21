@@ -1,0 +1,48 @@
+{# empty Twig template #}
+<style>
+    .parte_superior {
+        background: red;
+        width: 100%;
+        height: 9cm;
+        display: inline-flex;
+        
+    }
+    
+    .parte_inferior {
+        width: 100%;
+    } 
+    
+    .parte_carrusel {
+        background: magenta;
+        width: 65%;
+    }
+    
+    .parte_populares {
+        background: cyan;
+        width: 35%;
+    }
+    
+    .info_contenido {
+        background: white;
+        display: block;
+        padding: 2mm;
+    }
+</style>
+
+<div class="parte_superior">
+    <div class="parte_carrusel">
+        <span class="info_contenido">ÚLTIMA ACTUALIZACIÓN</span>
+        <div>{{  include('anime/carrusel.html.twig') }}</div>
+    </div>
+    <div class="parte_populares">
+        <span class="info_contenido">POPULARES</span>
+        <div>{{  include('anime/populares.html.twig') }}</div>
+    </div>
+</div>
+<div class="parte_inferior">
+    <span class="info_contenido">ANIME EN EMISIÓN</span>
+    <div>{{  include('anime/cuadricula.html.twig',{ 
+    			'fecha'        : 'semana', 
+    			'num_columnas' : 5,
+    			'cuadricula'   : animes }) }}</div>
+</div>

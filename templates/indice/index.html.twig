@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block titulo %}Índice{% endblock %}
+
+{% block estilos %}
+    <style>
+        .formulario_principal {          
+            background:  white;
+            width: var(--ancho);
+            margin: 5mm auto 5mm auto;
+            /*padding: 5mm 5mm 5mm 5mm;*/
+            border: 1mm solid gray;
+        }
+    </style>
+{% endblock %}
+        
+{% block codigo %}
+<script type="text/javascript">
+    /*function ajax(url, valor ,metodo, callback){
+        metodo = metodo.toUpperCase();
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                //this.responseText;
+                console.log(this.responseText);
+                console.log("listo");
+                callback();
+            }
+        };
+        if (metodo == "POST" || metodo == "GET") {
+            console.log(metodo);
+            xhttp.open(metodo, url, true);
+            if (metodo == "GET") {
+                xhttp.send();   
+            } else {
+                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhttp.send(valor);                
+            }
+        }
+    }*/
+    
+    //document.getElementById("boton").onclick = function(){ 
+    //    console.log("Enviando");
+    //    ajax("/jason", document.getElementById("entrada").value,"POST",function(){ alert("Recibido");});
+        //window.location.href = "/"+document.getElementById("entrada").value;
+    //};   
+    
+</script>
+{% endblock %}
+
+{% block cuerpo %}
+<div class="formulario_principal fuente_menu">
+    {% include 'indice/principal.html.twig' %}
+</div>
+{% endblock %}

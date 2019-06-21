@@ -1,13 +1,31 @@
 security:
+    encoders:
+        App\Entity\Usuario:
+            algorithm: argon2i
+
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        in_memory: { memory: ~ }
+        # used to reload user from session & other features (e.g. switch_user)
+        app_user_provider:
+            entity:
+                class: App\Entity\Usuario
+                property: email
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             anonymous: true
+            #logout: ~
+            logout:
+                path:   app_logout
+            guard:
+                authenticators:
+                    - App\Security\LoginAuthenticator
+
+            #guard:
+            #     authenticators:
+            #        - App\Security\TokenAuthenticator
 
             # activate different ways to authenticate
 

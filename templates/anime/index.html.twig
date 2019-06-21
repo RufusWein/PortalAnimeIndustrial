@@ -1,0 +1,190 @@
+{% extends 'base.html.twig' %} {% block titulo %}Series{% endblock %} {% block estilos %}
+<style>
+    .formulario_principal {
+        background: white;
+        width: var(--ancho);
+        margin: 5mm auto 5mm auto;
+        /*padding: 5mm 5mm 5mm 5mm;*/
+        border: 1mm solid darkgray;
+    }
+    
+    body>div.fijo>div>div:nth-child(2)>span {
+        color: lightgray;
+    }
+    
+    .parte_contenido {
+        width: 100%;
+        display: flex;
+        min-height: 100%;
+    }
+    
+    .parte_izquierda {
+        width: 80%;
+        min-height: 100%;
+        /*background: red;*/
+    }
+    
+    .parte_derecha {
+        width: 20%;
+        min-height: 100%;
+        /*background: blue;*/
+    }
+    
+    .info_contenido {
+        background: white;
+        display: block;
+        padding: 2mm;
+    }
+    
+    .opciones_listado,
+    .opciones_alfabeticas {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: darkgray;
+    }
+    
+    .opciones_alfabeticas {
+        background: white;
+    }
+    
+    .opciones_listado>li,
+    .opciones_alfabeticas>li {
+        float: left;
+        cursor: pointer;
+        padding: 2mm;
+    }
+    
+    .opciones_alfabeticas>li:not(.letra_seleccionada):hover {
+        color: #5eb5e0;
+    }
+    
+    .opciones_alfabeticas>li:hover {
+        background: white;
+    }
+    
+    .opciones_listado>li:not(.opcion_seleccionada):hover {
+        color: white;
+    }
+    
+    .opcion_seleccionada {
+        background: white;
+    }
+    
+    .letra_seleccionada {
+        text-decoration: underline;
+        color: #5eb5e0;
+    }
+    
+    #opcionesAlfa {
+        display: none;
+        padding-left: 5%;
+        padding-top: 5mm;
+    }
+    
+    #opcionesGene {
+        display: none;
+        padding-left: 5%;
+        padding-top: 5mm;
+    }
+</style>
+{% endblock %} {% block codigo %}
+<script type="text/javascript">
+    /*function ajax(url, valor ,metodo, callback){
+                                                    metodo = metodo.toUpperCase();
+                                                    var xhttp = new XMLHttpRequest();
+                                                    xhttp.onreadystatechange = function() {
+                                                        if (this.readyState == 4 && this.status == 200) {
+                                                            //this.responseText;
+                                                            console.log(this.responseText);
+                                                            console.log("listo");
+                                                            callback();
+                                                        }
+                                                    };
+                                                    if (metodo == "POST" || metodo == "GET") {
+                                                        console.log(metodo);
+                                                        xhttp.open(metodo, url, true);
+                                                        if (metodo == "GET") {
+                                                            xhttp.send();   
+                                                        } else {
+                                                            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                                                            xhttp.send(valor);                
+                                                        }
+                                                    }
+                                                }*/
+
+    //document.getElementById("boton").onclick = function(){ 
+    //    console.log("Enviando");
+    //    ajax("/jason", document.getElementById("entrada").value,"POST",function(){ alert("Recibido");});
+    //window.location.href = "/"+document.getElementById("entrada").value;
+    //};   
+
+    document.getElementById("opcionesListado").addEventListener("click", function(event) {
+        var opcion = event.target;
+        if (opcion.className === "") {
+            document.getElementById(this.getAttribute("seleccionado")).className = "";
+            this.setAttribute("seleccionado", opcion.id);
+            opcion.className = "opcion_seleccionada";
+            var opcionesAlfa = document.getElementById("opcionesAlfa"),
+                opcionesGene = document.getElementById("opcionesGene");
+
+            if (opcion.id === "opcionAlfabetico") {
+                opcionesAlfa.style.display = "block";
+                opcionesGene.style.display = "none";
+            } else
+            if (opcion.id === "opcionGenero") {
+                opcionesAlfa.style.display = "none";
+                opcionesGene.style.display = "block";
+            } else {
+                opcionesAlfa.style.display = "none";
+                opcionesGene.style.display = "none";
+            }
+        }
+    });
+
+    document.getElementById("opcionesAlfabeticas").addEventListener("click", function(event) {
+        var opcion = event.target;
+        if (opcion.className === "") {
+            document.getElementById(this.getAttribute("seleccionado")).className = "";
+            this.setAttribute("seleccionado", opcion.id);
+            opcion.className = "letra_seleccionada";
+        }
+    });
+</script>
+{% endblock %} {% block cuerpo %}
+<div class="formulario_principal fuente_menu">
+    <div class="parte_contenido">
+        <div class="parte_izquierda">
+            <div>
+                <ul class="opciones_listado" id="opcionesListado" seleccionado="opcionTodo">
+                    <li id="opcionTodo" class="opcion_seleccionada">TODO</li>
+                    <li id="opcionEmision" class="">EMISIÓN</li>
+                    <li id="opcionAlfabetico" class="">ALFABÉTICO</li>
+                    <li id="opcionGenero" class="">GÉNERO</li>
+                </ul>
+            </div>
+            <div id="opcionesAlfa">
+                <ul class="opciones_alfabeticas" id="opcionesAlfabeticas" seleccionado="A">
+                    <li id="A" class="letra_seleccionada">A</li>
+                    {% for letra in range('B','Z') %}
+                    <li id="{{ letra }}" class="">{{ letra }}</li>
+                    {% endfor %}
+                    <li id="numero" class="">#</li>
+                </ul>
+            </div>
+            <div id="opcionesGene">
+                {{ include('/etiquetas.html.twig',{ 'name': 'generos', 'etiquetas': ETIQUETAS }) }}
+            </div>
+            <div>{{ include('anime/cuadricula.html.twig',{ 
+                		'modo_agregar' : true , 
+                		'num_columnas' : 4, 
+                		'cuadricula'   : animes }) }}</div>
+        </div>
+        <div class="parte_derecha">
+            <span class="info_contenido">POPULARES</span>
+            <!-- cualquier chorrada que se quiera añadir aquí -->
+        </div>
+    </div>
+</div>
+{% endblock %}
