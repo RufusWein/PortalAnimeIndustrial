@@ -72,8 +72,8 @@ class AnimeRepository extends ServiceEntityRepository
         $anime->setValoracion(3); // por defecto
         $anime->setFechaPublicacion($animeInfo['fecha_publicacion']);//->format("Y-m-d H:i:s"));)
 
-        if ($fichero) {
-            $anime->setPortada($this->getParameter('ruta_portadas')."/".$nombreFicheroEncriptado);
+        if ($animeInfo['fichero']) {
+            $anime->setPortada($animeInfo['fichero']);
         }
 
         return $anime;    

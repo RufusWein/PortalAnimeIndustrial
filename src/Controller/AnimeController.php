@@ -146,7 +146,7 @@ class AnimeController extends AbstractController
 
         // Creamos el anime si es el caso, OJO porque esto no es el v�deo
         if ($nuevoAnime){
-            $anime = $animes->crear($animeId,[
+            $anime = $animes->crear([
                 'titulo'            => $titulo,
                 'descripcion'       => $descripcion,
                 'etiquetas'         => $etiquetas,
