@@ -151,21 +151,6 @@
         }
     }
     
-    .opcion_nuevo {
-        display: flex;
-    }
-    
-    .opcion_nuevo>input {
-        cursor: pointer;
-    }
-    
-    .opcion_nuevo>span {
-        font-size: 1.5em;
-        margin-top: auto;
-        margin-bottom: auto;
-        margin-left: 1mm;
-    }
-    
     input[type="date"] {
         font-size: 1.3em;
         cursor: pointer;
@@ -185,34 +170,30 @@
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     }
     
-    #series {
-        visibility: hidden;
-    }
-    
-    #series>div {
+    .capitulos>div {
         display: flex;
     }
     
-    #series>div>div {
+    .capitulos>div>div {
         border: 1px #a5a2a2 solid;
         max-height: 13.6em;
         width: 59%;
         overflow-y: auto;
     }
     
-    #series ul {
+    .capitulos ul {
         list-style-type: none;
         padding: 0;
         margin: 0;
     }
     
-    #series li {
+    .capitulos li {
         box-sizing: border-box;
         height: 3.4em;
         padding: .8em 1em;
         font-size: 1.17em;
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        line-height: 1.8;
+        /*line-height: 1.8;*/
         cursor: pointer;
     }
     
@@ -227,7 +208,8 @@
     <div>
         <div class="form_izquierdo">
             <div class="marco">
-                <img id="imagen" class="portada" title="Haz clic aquí para seleccionar una imagen de portada" src="http://icons.iconarchive.com/icons/media-design/hydropro/256/HP-Pictures-Folder-icon.png" onContextMenu="return false;">
+                <img id="imagen" class="portada" title="Haz clic aquí para seleccionar una imagen de portada" {% if imagen is not defined%} src="http://icons.iconarchive.com/icons/media-design/hydropro/256/HP-Pictures-Folder-icon.png" {% else %} src="{{ imagen }}" {%
+                    endif %} onContextMenu="return false;">
                 <input type="file" id="portada" name="portada" accept=".jpg, .jpeg, .png">
             </div>
             <div class="contenedor">
@@ -239,10 +221,6 @@
             </div>
         </div>
         <div class="form_derecho">
-            <div class="opcion_nuevo">
-                <input onclick="opcionSeries(this);" name="nuevo_anime" type="checkbox" {{ nuevo_anime }}><span class="status">Nueva Serie</span>
-            </div>
-
             <h1>Información</h1>
             <div>
                 <span class="info">Título</span>
@@ -265,29 +243,18 @@
                 </textarea>
             </div>
             <br>
-            <h1>Vídeo</h1>
-            <div>
-                <span class="info">Nombre</span>
-                <input name="video_titulo" class="larga" value="{{ video_titulo }}" required="required">
-            </div>
-            <div>
-                <span class="info">URL</span>
-                <input name="video_url" type="url" pattern="https?://.+" class="larga" value="{{ video_url }}" required="required">
-            </div>
-            <br>
-            <div id="series">
-                <h1>Series</h1>
+            <div class="capitulos">
+                <h1>Capítulos</h1>
                 <div>
-                    <span class="info">Selecciona Serie</span>
+                    <span class="info">Selecciona Capítulo</span>
                     <div>
                         <ul id="lista_series">
-                            {% for anime in animes %} {% if anime.id_anime!=-1 %}
-                            <li seleccionada="0" id="serie{{ anime.id_anime }}" onclick="seleccionaSerie(this,'{{ anime.id_anime }}');">
-                                {{- anime.titulo -}}
+                            {% for capitulo in capitulos %} {% if capitulo.id!=-1 %}
+                            <li>
+                                <a>{{- capitulo.titulo -}}</a>
                             </li>
                             {% endif %} {% endfor %}
                         </ul>
-                        <input type="hidden" id="anime_id" name="anime_id" value="{{ animes[1].id_anime }}">
                     </div>
                 </div>
             </div>
@@ -323,6 +290,14 @@
         }
     }
 
+    if ("{{ imagen }}" != "error") {
+        sessionStorage.setItem("image_tmp", imagen.src);
+    } else {
+        imagen.src = sessionStorage.getItem("image_tmp");
+    }
+
+    console.log(imagen.src);
+
     imagen.addEventListener("click", function() {
         document.getElementById("portada").click();
     });
@@ -331,13 +306,11 @@
         var fichero = event.target.files[0],
             reader = new FileReader();
 
-        if (fichero == "error") fichero = localStorage.getItem("image_tmp");
-
         reader.onload = function(event) {
             // creamos una copia temporal por si sucede algún problema y haya que restaurar la página
             // otra vez.
             // El problema si es causado en el back lo recibimos con una portada "error"
-            localStorage.setItem("image_tmp", event.target.result);
+            sessionStorage.setItem("image_tmp", event.target.result);
             imagen.src = event.target.result;
         };
         reader.readAsDataURL(fichero);

@@ -18,7 +18,7 @@ class Capitulo
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\anime", inversedBy="capitulos")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
     private $anime;
 

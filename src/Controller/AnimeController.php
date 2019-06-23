@@ -45,11 +45,11 @@ class AnimeController extends AbstractController
         $animes = $this->getDoctrine()->getRepository(\App\Entity\Anime::class);
         
         $porDefecto = [
-            'nuevo_anime'     => "checked",
-            //'portada'         => "",
-            'titulo'          => "",
-            'descripcion'     => "",
-            'etiquetas_sel'   => "",
+            'nuevo_anime'      => "checked",
+            'portada'          => "",
+            'titulo'           => "",
+            'descripcion'      => "",
+            'etiquetas_sel'    => "",
             'fecha_publicacion'=> (new \DateTime())->format("Y-m-d"),
             
             'anime_id'      => "",
@@ -126,11 +126,13 @@ class AnimeController extends AbstractController
 
         //$error=true;
         if ($error){ 
-            $respuesta['nuevo_anime']    = ($nuevoAnime=="on"?"checked":"");
-            //$respuesta['portada']        = $fichero;
-            $respuesta['titulo']         = $titulo;
-            $respuesta['descripcion']    = $descripcion;
-            $respuesta['etiquetas_sel' ] = $etiquetas;
+            $respuesta['nuevo_anime']       = ($nuevoAnime=="on"?"checked":"");
+            // Cada vez que hacemos un submit el frontend hace una copia temporal en local (en el browser)
+            // si enviamos "error" al frontend le indicamos que recupere la copia temporal y la use.
+            $respuesta['portada']           = "error";
+            $respuesta['titulo']            = $titulo;
+            $respuesta['descripcion']       = $descripcion;
+            $respuesta['etiquetas_sel' ]    = $etiquetas;
             $respuesta['fecha_publicacion'] = $fechaPublicacion->format("Y-m-d");
                     
             $respuesta['anime_id']     = $animeId;
@@ -244,6 +246,43 @@ class AnimeController extends AbstractController
         if ($this->getUser() ==NULL) { return $this->redirectToRoute("login_registro"); }
           
         return $this->render('usuario/perfil.html.twig');
+    }
+
+    /**
+     * @Route("/anime/{idanime}", name="ver_capitulos")
+     */ 
+    public function verCapitulos($idanime){
+        if (!Util::esUsuario($this->getUser(),"")){ return $this->redirectToRoute("login_registro"); }
+          
+        setlocale(LC_ALL,"es_ES.UTF8");
+        $animes = $this->getDoctrine()->getRepository(\App\Entity\Anime::class);
+        $anime = $animes->find($idanime);
+        $capitulos =[];
+
+        foreach ($anime->getCapitulos() as $capitulo){
+            $capitulos[]=[
+                "id"                => $capitulo->getId(),
+                "titulo"            => $capitulo->getTitulo(),
+                "fecha_publicacion" => ucfirst(strftime("%A, %d de %B de %Y",
+                                               $capitulo->getFechaPublicacion()->getTimestamp()))
+            ];
+        }
+
+        $respuesta =[
+            'id'          => $anime->getId(),
+            'imagen'      => $anime->getPortada(),
+            'titulo'      => $anime->getTitulo(),
+            'descripcion' => $anime->getDescripcion(),
+            'fecha_publicacion'=> ucfirst(strftime("%A, %d de %B de %Y",
+                                          $anime->getFechaPublicacion()->getTimestamp())),
+
+            'capitulos'  => $capitulos,
+
+            'ETIQUETAS'  => Util::ETIQUETAS,
+            'etiquetas_sel'   => $anime->getEtiquetas(),
+        ];
+
+        return $this->render('anime/capitulos.html.twig', $respuesta);
     }
    
 }

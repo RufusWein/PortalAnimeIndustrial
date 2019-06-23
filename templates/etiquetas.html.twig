@@ -28,14 +28,23 @@
         background: #5eb5e0;
         color: white;
     }
+    
+    .noedicion {
+        background: #5eb5e0;
+        color: white;
+        padding: 2mm;
+    }
 </style>
 <ul class="opciones__" id="ul_{{ name }}">
-    {% if seleccionadas is not defined %} {% set seleccionadas = '' %} {% endif %} {% for etiqueta in ETIQUETAS %} {% set tag = etiqueta | replace({ 'á':'a', 'é':'e', 'í':'i', 'ó':'o', 'ú':'u' }) %}
+    {% if seleccionadas is not defined %} {% set seleccionadas = '' %} {% endif %} {% for etiqueta in ETIQUETAS %} {% set tag = etiqueta | replace({ 'á':'a', 'é':'e', 'í':'i', 'ó':'o', 'ú':'u' }) %} {% if edicion is not defined %} {% if tag in seleccionadas
+    %}
+    <li class="opcion__ noedicion"><label>{{ etiqueta }}</label></li>
+    {% endif %} {% else %}
     <li class="opcion__" id="{{ tag }}" onclick="document['selecciona{{ name }}']('{{ tag }}');" value="{{  (tag in seleccionadas) ? '1' : '0'}}">
         <input id="opcion{{ name }}{{ tag }}" type="checkbox" title="{{ etiqueta }}" {{ (tag in seleccionadas) ? 'checked' : '' }}>
         <label>{{ etiqueta }}</label>
     </li>
-    {% endfor %}
+    {% endif %} {% endfor %}
 </ul>
 <input name="{{ name }}" id="{{ name }}" type="hidden" style="display:none" value="{{ seleccionadas }}">
 <script type="text/javascript">

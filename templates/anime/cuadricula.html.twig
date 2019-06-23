@@ -7,6 +7,7 @@
     .anime_marco {
         padding: .5cm 6mm 5mm 6mm;
         word-wrap: break-word;
+        position: relative;
     }
     
     .anime_info {
@@ -90,6 +91,17 @@
         border: 1px lightgrey solid;
         cursor: pointer;
     }
+    
+    .eliminar {
+        position: absolute;
+        z-index: 1;
+        right: 3.8mm;
+        top: 1.5mm;
+    }
+    
+    .eliminar img {
+        width: 1cm;
+    }
 </style>
 {# {% set cuadricula=[ { id_anime : -1 }, { id_anime : 123, titulo : "ONE PUCH MAN", portada : "http://es.web.img3.acsta.net/c_216_288/pictures/17/02/27/17/41/046707.jpg", num_videos : 1 }, { id_anime : 123, titulo : "ONEPUCHMANDSFSDFDSF ", portada :
 "http://es.web.img3.acsta.net/c_216_288/pictures/17/02/27/17/41/046707.jpg", num_videos : 10 }, { id_anime : 123, titulo : "ONE PUCH MAN", portada : "http://es.web.img3.acsta.net/c_216_288/pictures/17/02/27/17/41/046707.jpg", num_videos : 1 }, { id_anime
@@ -110,7 +122,12 @@ app.user.roles %} {% set administrador=1 %} {% endif %} {% endif %} {% if modo_a
         <0 %}</tr>{% set columnas=num_columnas %}{% endif %} {% elseif anime.id_anime!=-1 %} {% if columnas == num_columnas %}
             <tr class="fila">{% endif %}
                 <td class="anime_marco">
-                    <a href="anime/info/{{ anime.id_anime }}">
+                    {% if administrador %}
+                    <a class="eliminar" href="/series" title="Eliminar anime">
+                        <img src="http://pluspng.com/img-png/delete-button-png-delete-icon-16.jpg">
+                    </a>
+                    {% endif %}
+                    <a href="anime/{{ anime.id_anime }}">
                         <div class="anime_info">
                             <div class="anime_videos">
                                 <span>{{ anime.num_videos }} vídeo{% if anime.num_videos > 1 %}s{% endif %}</span>

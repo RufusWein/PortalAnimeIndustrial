@@ -49,8 +49,7 @@ class AnimeRepository extends ServiceEntityRepository
                         return true;
                     }
                 }
-            } else 
-            if ($this->findOneBy(['titulo'=>$titulo])) {
+            } else if ($this->findOneBy(['titulo'=>$titulo])!==NULL) {
                 return true;
             }
         } else {
