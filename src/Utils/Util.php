@@ -3,6 +3,9 @@
 namespace App\Utils;
 
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use Symfony\Component\Filesystem\Filesystem;
+
 use Symfony\Component\Validator\Constraints\DateTime;
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -37,6 +40,36 @@ class Util {
         }
 
         return $ruta."/".$nombreFicheroEncriptado;
+    }
+
+    //put your code here
+    public function GuardaFichero($ruta, $nombre, $fichero){
+        if ($fichero) {
+            $nombre.= ".".$fichero->guessExtension();
+            try {
+                $fichero->move( $ruta, $nombre);               
+            } catch (FileException $e) {
+                // ... handle exception if something happens during file upload
+                return NULL;
+            }
+        } else {
+            return NULL;
+        }
+
+        return $ruta."/".$nombre;
+    }
+
+    public function RenombraFichero($nombre_viejo, $nombre_nuevo){
+        $filesystem = new Filesystem();
+
+        try {
+            $filesystem->rename($nombre_viejo , $nombre_nuevo);              
+        } catch (IOExceptionInterface $e) {
+            // ... handle exception if something happens during file upload
+            return false;
+        }
+
+        return true;
     }
 
     public function FechaInvalida($fecha){

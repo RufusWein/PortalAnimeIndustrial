@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %} {% block titulo %}Añadir vídeo{% endblock %} {% block estilos %}
+{% extends 'base.html.twig' %} {% block titulo %}Editar Ánime{% endblock %} {% block estilos %}
 <style>
     .formulario_principal {
         background: white;
@@ -208,8 +208,8 @@
     <div>
         <div class="form_izquierdo">
             <div class="marco">
-                <img id="imagen" class="portada" title="Haz clic aquí para seleccionar una imagen de portada" {% if imagen is not defined%} src="http://icons.iconarchive.com/icons/media-design/hydropro/256/HP-Pictures-Folder-icon.png" {% else %} src="{{ imagen }}" {%
-                    endif %} onContextMenu="return false;">
+                <img id="imagen" name="imagen" class="portada" title="Haz clic aquí para seleccionar una imagen de portada" {% if imagen is not defined%} src="http://icons.iconarchive.com/icons/media-design/hydropro/256/HP-Pictures-Folder-icon.png" {% else %} src="{{ imagen }}"
+                    {% endif %} onContextMenu="return false;">
                 <input type="file" id="portada" name="portada" accept=".jpg, .jpeg, .png">
             </div>
             <div class="contenedor">
@@ -217,7 +217,7 @@
             </div>
             <div class="contenedor">
                 <span class="subrayado info">Etiquetas</span><br>
-                <div>{{ include('/etiquetas.html.twig',{ name: 'generos', seleccionadas: etiquetas_sel , "ETIQUETAS" : ETIQUETAS }) }}</div>
+                <div>{{ include('/etiquetas.html.twig',{ "edicion": "on" ,"name": 'generos', "seleccionadas": etiquetas_sel , "ETIQUETAS" : ETIQUETAS }) }}</div>
             </div>
         </div>
         <div class="form_derecho">
@@ -246,7 +246,7 @@
             <div class="capitulos">
                 <h1>Capítulos</h1>
                 <div>
-                    <span class="info">Selecciona Capítulo</span>
+                    <span class="info">Selecciona Opción</span>
                     <div>
                         <ul id="lista_series">
                             {% for capitulo in capitulos %} {% if capitulo.id!=-1 %}
@@ -264,6 +264,10 @@
     <div>
         <button type="submit">Guardar</button>
     </div>
+    {% if error is defined %}
+    <input type="hidden" name="error" value="on"> {% endif %}
+    <input type="hidden" name="edicion" value="on">
+    <input type="hidden" id="anime_id" name="anime_id" value="{{ anime_id }}">
     <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 </form>
 {% endblock %} {% block codigo %}
@@ -290,28 +294,23 @@
         }
     }
 
-    if ("{{ imagen }}" != "error") {
-        sessionStorage.setItem("image_tmp", imagen.src);
-    } else {
-        imagen.src = sessionStorage.getItem("image_tmp");
-    }
-
-    console.log(imagen.src);
-
     imagen.addEventListener("click", function() {
         document.getElementById("portada").click();
     });
 
     document.getElementById("portada").addEventListener("change", function(event) {
         var fichero = event.target.files[0],
-            reader = new FileReader();
+            reader = new FileReader(),
+            request = new XMLHttpRequest(),
+            formData;
 
         reader.onload = function(event) {
-            // creamos una copia temporal por si sucede algún problema y haya que restaurar la página
-            // otra vez.
-            // El problema si es causado en el back lo recibimos con una portada "error"
-            sessionStorage.setItem("image_tmp", event.target.result);
             imagen.src = event.target.result;
+            formData = new FormData();
+            formData.append("fichero", fichero);
+            formData.append("imagen", imagen.src);
+            request.open("POST", "/anime/portada/" + document.getElementById("anime_id").value);
+            request.send(formData);
         };
         reader.readAsDataURL(fichero);
     });

@@ -92,6 +92,16 @@
         cursor: pointer;
     }
     
+    .icono_marco {
+        width: 1cm;
+        box-shadow: 0.5mm 1mm 1mm rgba(0, 0, 0, 0.5);
+        border-radius: 1cm;
+        border: 1px gray solid;
+        height: 1cm;
+        background-position: center;
+        background-size: 1.01cm;
+    }
+    
     .eliminar {
         position: absolute;
         z-index: 1;
@@ -99,8 +109,11 @@
         top: 1.5mm;
     }
     
-    .eliminar img {
-        width: 1cm;
+    .editar {
+        position: absolute;
+        z-index: 1;
+        right: 3.8mm;
+        top: 1cm;
     }
 </style>
 {# {% set cuadricula=[ { id_anime : -1 }, { id_anime : 123, titulo : "ONE PUCH MAN", portada : "http://es.web.img3.acsta.net/c_216_288/pictures/17/02/27/17/41/046707.jpg", num_videos : 1 }, { id_anime : 123, titulo : "ONEPUCHMANDSFSDFDSF ", portada :
@@ -124,7 +137,10 @@ app.user.roles %} {% set administrador=1 %} {% endif %} {% endif %} {% if modo_a
                 <td class="anime_marco">
                     {% if administrador %}
                     <a class="eliminar" href="/series" title="Eliminar anime">
-                        <img src="http://pluspng.com/img-png/delete-button-png-delete-icon-16.jpg">
+                        <div class="icono_marco" style="background-image: url(/iconos/icono-eliminar.png)"></div>
+                    </a>
+                    <a class="editar" href="/anime/edit/{{ anime.id_anime }}" title="Editar anime">
+                        <div class="icono_marco" style="background-image: url(/iconos/icono-editar.png)"></div>
                     </a>
                     {% endif %}
                     <a href="anime/{{ anime.id_anime }}">

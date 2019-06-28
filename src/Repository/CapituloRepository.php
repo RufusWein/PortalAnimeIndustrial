@@ -14,9 +14,32 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class CapituloRepository extends ServiceEntityRepository
 {
+
     public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, Capitulo::class);
+    }
+
+    /**
+     * @return Capitulo[] Returns an array of json objects
+     */   
+    public function listarCapitulosPorFecha($anime){
+        $resultado=[];
+
+        foreach ($this->findBy(['anime'=>$anime],['fecha_publicacion'=>'ASC']) as $capitulo){
+            array_push($resultado,$capitulo);
+        }
+        
+        return $resultado;
+    } 
+    
+    /** 
+    * Capitulo Return a Capitulo object
+    */
+    public function siguiente($idcapitulo): Capitulo{
+        $animeid = $this->find($idcapitulo)->getAnime()->getId();
+
+        return null;
     }
 
     // /**

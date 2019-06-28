@@ -155,12 +155,11 @@
     
     .capitulos li {
         box-sizing: border-box;
-        height: 3.4em;
-        padding: .8em 1em;
         font-size: 1.17em;
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         line-height: 1.8;
         cursor: pointer;
+        padding-right: 2em;
     }
     
     .capitulos a {
@@ -168,7 +167,7 @@
         color: inherit;
         display: flex;
         width: 100%;
-        padding: 0;
+        padding: .8em 1em;
     }
     
     .capitulos label {
@@ -176,6 +175,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        cursor: pointer;
     }
     
     .capitulos span {
@@ -222,7 +222,7 @@
             <div class="capitulos">
                 <ul>
                     {% for i in range(1,6) %} {% for capitulo in capitulos %} {% if capitulo.id!=-1 %}
-                    <li><a href="anime/{{ id }}/capitulo/{{ capitulo.id }}" title="{{ capitulo.titulo }}"><label>{{ capitulo.titulo }}</label><span>{{ capitulo.fecha_publicacion }}</span></a></li>
+                    <li><a href="ver/{{ capitulo.id }}" title="{{ capitulo.titulo }}"><label>{{ capitulo.titulo }}</label><span>{{ capitulo.fecha_publicacion }}</span></a></li>
                     {% endif %} {% endfor %} {% endfor %}
                 </ul>
             </div>

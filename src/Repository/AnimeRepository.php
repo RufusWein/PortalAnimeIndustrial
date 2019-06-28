@@ -19,6 +19,21 @@ class AnimeRepository extends ServiceEntityRepository
         parent::__construct($registry, Anime::class);
     }
 
+    // /**
+    //  * @return Object[] Returns an array of json objects
+    //  */   
+    //  public function listarCapitulosPorFecha(){
+        
+    //     foreach ($this->findBy(['anime_id'=>$idanime],['fecha_publicacion'=>'ASC']) as $capitulo){
+    //         array_push($resultado,[
+    //             "id"         => $capitulo->getId(),
+    //             "titulo"     => $capitulo->getTitulo(),           
+    //         ]);
+    //     }
+        
+    //     return $resultado;
+    // } 
+
     /**
      * @return Object[] Returns an array of json objects
      */   
@@ -101,23 +116,6 @@ class AnimeRepository extends ServiceEntityRepository
 
         return $anime;
     }
-
-    // /**
-    //  * @return Anime[] Returns an array of Anime objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('a.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
 
     /*
     public function findOneBySomeField($value): ?Anime

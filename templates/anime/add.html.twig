@@ -214,6 +214,10 @@
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         line-height: 1.8;
         cursor: pointer;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
     }
     
     li[seleccionada="1"] {
@@ -235,7 +239,7 @@
             </div>
             <div class="contenedor">
                 <span class="subrayado info">Etiquetas</span><br>
-                <div>{{ include('/etiquetas.html.twig',{ name: 'generos', seleccionadas: etiquetas_sel , "ETIQUETAS" : ETIQUETAS }) }}</div>
+                <div>{{ include('/etiquetas.html.twig',{ edicion: 'on', name: 'generos', seleccionadas: etiquetas_sel , "ETIQUETAS" : ETIQUETAS }) }}</div>
             </div>
         </div>
         <div class="form_derecho">
@@ -282,7 +286,7 @@
                     <div>
                         <ul id="lista_series">
                             {% for anime in animes %} {% if anime.id_anime!=-1 %}
-                            <li seleccionada="0" id="serie{{ anime.id_anime }}" onclick="seleccionaSerie(this,'{{ anime.id_anime }}');">
+                            <li title="{{ anime.titulo }}" seleccionada="0" id="serie{{ anime.id_anime }}" onclick="seleccionaSerie(this,'{{ anime.id_anime }}');">
                                 {{- anime.titulo -}}
                             </li>
                             {% endif %} {% endfor %}

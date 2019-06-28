@@ -17,7 +17,7 @@ class Capitulo
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\anime", inversedBy="capitulos")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Anime", inversedBy="capitulos")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
     private $anime;
@@ -47,12 +47,12 @@ class Capitulo
         return $this->id;
     }
 
-    public function getIdAnime(): Anime
+    public function getAnime(): Anime
     {
         return $this->anime;
     }
 
-    public function setIdAnime(Anime $anime): self
+    public function setAnime(Anime $anime): self
     {
         $this->anime = $anime;
 

@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %} {% block titulo %}Series{% endblock %} {% block estilos %}
+<style>
+    .formulario_principal {
+        background: white;
+        width: var(--ancho);
+        margin: 5mm auto 5mm auto;
+        /*padding: 5mm 5mm 5mm 5mm;*/
+        border: 1mm solid darkgray;
+    }
+    
+    body>div.fijo>div>div:nth-child(2)>span {
+        color: lightgray;
+    }
+    
+    .parte_contenido {
+        width: 100%;
+        display: flex;
+        min-height: 100%;
+    }
+    
+    .info_contenido {
+        background: white;
+        display: block;
+        padding: 2mm;
+    }
+</style>
+{% endblock %} {% block codigo %}
+<script type="text/javascript">
+    document.getElementById("opcionesListado").addEventListener("click", function(event) {
+        var opcion = event.target;
+        if (opcion.className === "") {
+            document.getElementById(this.getAttribute("seleccionado")).className = "";
+            this.setAttribute("seleccionado", opcion.id);
+            opcion.className = "opcion_seleccionada";
+            var opcionesAlfa = document.getElementById("opcionesAlfa"),
+                opcionesGene = document.getElementById("opcionesGene");
+
+            if (opcion.id === "opcionAlfabetico") {
+                opcionesAlfa.style.display = "block";
+                opcionesGene.style.display = "none";
+            } else
+            if (opcion.id === "opcionGenero") {
+                opcionesAlfa.style.display = "none";
+                opcionesGene.style.display = "block";
+            } else {
+                opcionesAlfa.style.display = "none";
+                opcionesGene.style.display = "none";
+            }
+        }
+    });
+
+    document.getElementById("opcionesAlfabeticas").addEventListener("click", function(event) {
+        var opcion = event.target;
+        if (opcion.className === "") {
+            document.getElementById(this.getAttribute("seleccionado")).className = "";
+            this.setAttribute("seleccionado", opcion.id);
+            opcion.className = "letra_seleccionada";
+        }
+    });
+</script>
+{% endblock %} {% block cuerpo %}
+<div class="formulario_principal fuente_menu">
+    <div class="parte_contenido">
+        <h1>Hola mundo</h1>
+
+    </div>
+</div>
+{% endblock %}
