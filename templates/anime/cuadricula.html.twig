@@ -107,6 +107,7 @@
         z-index: 1;
         right: 3.8mm;
         top: 1.5mm;
+        transition: transform 0.3s;
     }
     
     .editar {
@@ -114,6 +115,15 @@
         z-index: 1;
         right: 3.8mm;
         top: 1cm;
+        transition: transform 0.3s;
+    }
+    
+    .eliminar:hover,
+    .editar:hover {
+        z-index: 1000;
+        transform: scale(1.1, 1.1);
+        border-radius: 1cm;
+        box-shadow: 0mm 0mm 1mm cyan;
     }
 </style>
 {# {% set cuadricula=[ { id_anime : -1 }, { id_anime : 123, titulo : "ONE PUCH MAN", portada : "http://es.web.img3.acsta.net/c_216_288/pictures/17/02/27/17/41/046707.jpg", num_videos : 1 }, { id_anime : 123, titulo : "ONEPUCHMANDSFSDFDSF ", portada :
