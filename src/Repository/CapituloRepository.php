@@ -32,7 +32,23 @@ class CapituloRepository extends ServiceEntityRepository
         
         return $resultado;
     } 
-    
+
+    /**
+      * @return Boolean Returns true/false
+      */
+    public function tituloInvalido($titulo, $anime){
+        if ($titulo) { 
+            if ($anime){ 
+                if ($this->findBy(['anime'=> $anime, 'titulo'=> $titulo])){
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        return true;
+    }
     /** 
     * Capitulo Return a Capitulo object
     */

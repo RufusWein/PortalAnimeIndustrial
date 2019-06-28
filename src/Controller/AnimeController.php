@@ -48,6 +48,7 @@ class AnimeController extends AbstractController
         $porDefecto = [
             'nuevo_anime'      => "checked",
             'portada'          => "",
+            'imagen'           => "",
             'titulo'           => "",
             'descripcion'      => "",
             'etiquetas_sel'    => "",
@@ -110,8 +111,10 @@ class AnimeController extends AbstractController
     public function getAnime($id, Request $request) {
         if (!Util::esUsuario($this->getUser(),"")){ return $this->redirectToRoute("login_registro"); }
 
-        $animes = $this->getDoctrine()->getRepository(\App\Entity\Anime::class);
+        $animes    = $this->getDoctrine()->getRepository(\App\Entity\Anime::class);
         //$datos = json_decode( $request->getContent(), true); // a traves de ajax
+
+        $this->container->get('session')->set('portada_'.$id, NULL);
         $anime = $animes->find($id);
 
         $respuesta =[
@@ -137,15 +140,17 @@ class AnimeController extends AbstractController
         
         $entityManager = $this->getDoctrine()->getManager();
         $animes = $entityManager->getRepository(\App\Entity\Anime::class);
+        $capitulos = $this->getDoctrine()->getRepository(\App\Entity\Capitulo::class);
 
         $respuesta = ["ETIQUETAS"    => Util::ETIQUETAS];
 
-        $nuevoAnime= $request->request->get("nuevo_anime"); // devuelve "on" o null  
-        $edicion = $request->request->get("edicion"); // on o null      
-        $etiquetas = $request->request->get("generos");
-        $animeId=$request->request->get("anime_id");
-        $fichero = $request->files->get('portada');
-        $error=false;
+        $nuevoAnime = $request->request->get("nuevo_anime"); // devuelve "on" o null  
+        $edicion    = $request->request->get("edicion"); // on o null      
+        $etiquetas  = $request->request->get("generos");
+        $animeId    = $request->request->get("anime_id");
+        $imagen     = $this->container->get('session')->get('portada_'.$animeId)["imagen"];
+        $fichero    = $request->files->get('portada');
+        $error      = false;
 
         $descripcion = $request->request->get("descripcion");
         if ($descripcion===NULL){
@@ -158,8 +163,8 @@ class AnimeController extends AbstractController
         }
         
         $videoTitulo = $request->request->get("video_titulo");
-        if ($videoTitulo===NULL && $edicion===NULL){
-            $error = $respuesta["error_video_titulo"] = "Error en el título!";
+        if ($capitulos->tituloInvalido( $videoTitulo, $animes->find($animeId) ) && $edicion===NULL){
+            $error = $respuesta["error_video_titulo"] = "Título en uso!";
         }
 
         $titulo = $request->request->get("titulo");
@@ -175,9 +180,11 @@ class AnimeController extends AbstractController
         //$error=true;
         if ($error){ 
             $respuesta['nuevo_anime']       = ($nuevoAnime=="on"?"checked":"");
-            // Cada vez que hacemos un submit el frontend hace una copia temporal en local (en el browser)
-            // si enviamos "error" al frontend le indicamos que recupere la copia temporal y la use.
-            $respuesta['imagen']            = $this->container->get('session')->get('portada_'.$animeId)["imagen"];
+            if ($imagen=="" && $nuevoAnime!=="on" && $animeId>0){ // No es un nuevo anime, ponemos la imagen que tenga el anime
+                $imagen= $animes->find($animeId)->getPortada(); 
+            }
+            $respuesta['imagen']            = $imagen;
+            
             $respuesta['titulo']            = $titulo;
             $respuesta['descripcion']       = $descripcion;
             $respuesta['etiquetas_sel' ]    = $etiquetas;
@@ -190,7 +197,6 @@ class AnimeController extends AbstractController
             $respuesta['animes'] = $animes->listar();
 
             if ($edicion){
-                $respuesta['error'] = "error";
                 $respuesta['capitulos'] = $animes->find($animeId)->getCapitulos();
                 return $this->render('anime/edit_anime.html.twig', $respuesta);                
             }

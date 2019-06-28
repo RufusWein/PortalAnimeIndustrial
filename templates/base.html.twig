@@ -1,271 +1,305 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block titulo %}Bienvenido!{% endblock %}</title>
-        <style>
-            /* width */
-            ::-webkit-scrollbar {
-              width: 3mm;
-            }
 
-            /* Track */
-            ::-webkit-scrollbar-track {
-              background: #f1f1f1; 
-            }
-
-            /* Handle */
-            ::-webkit-scrollbar-thumb {
-              background: #888; 
-            }
-
-            /* Handle on hover */
-            ::-webkit-scrollbar-thumb:hover {
-              background: #555; 
-            }
-
-            .noselect {
-                -webkit-touch-callout: none; /* iOS Safari */
-                  -webkit-user-select: none; /* Safari */
-                   -khtml-user-select: none; /* Konqueror HTML */
-                     -moz-user-select: none; /* Firefox */
-                      -ms-user-select: none; /* Internet Explorer/Edge */
-                          user-select: none; /* Non-prefixed version, currently
+<head>
+    <meta charset="UTF-8">
+    <title>{% block titulo %}Bienvenido!{% endblock %}</title>
+    <style>
+        /* width */
+        
+         ::-webkit-scrollbar {
+            width: 3mm;
+        }
+        /* Track */
+        
+         ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        /* Handle */
+        
+         ::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+        /* Handle on hover */
+        
+         ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        .noselect {
+            -webkit-touch-callout: none;
+            /* iOS Safari */
+            -webkit-user-select: none;
+            /* Safari */
+            -khtml-user-select: none;
+            /* Konqueror HTML */
+            -moz-user-select: none;
+            /* Firefox */
+            -ms-user-select: none;
+            /* Internet Explorer/Edge */
+            user-select: none;
+            /* Non-prefixed version, currently
                                                 supported by Chrome and Opera */
-            }
-            
-            .select {
-                -webkit-touch-callout: text; /* iOS Safari */
-                  -webkit-user-select: text; /* Safari */
-                   -khtml-user-select: text; /* Konqueror HTML */
-                     -moz-user-select: text; /* Firefox */
-                      -ms-user-select: text; /* Internet Explorer/Edge */
-                          user-select: text; /* Non-prefixed version, currently
-                                                supported by Chrome and Opera */                
-            }
-            
-            body,html {
-                height: 100%;
-                width: 100%;
-                overflow: hidden;
-                margin: 0;
-                --ancho  : 26cm;
-                --tamlogo: 4cm;
-            }
+        }
+        
+        .select {
+            -webkit-touch-callout: text;
+            /* iOS Safari */
+            -webkit-user-select: text;
+            /* Safari */
+            -khtml-user-select: text;
+            /* Konqueror HTML */
+            -moz-user-select: text;
+            /* Firefox */
+            -ms-user-select: text;
+            /* Internet Explorer/Edge */
+            user-select: text;
+            /* Non-prefixed version, currently
+                                                supported by Chrome and Opera */
+        }
+        
+        body,
+        html {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            margin: 0;
+            --ancho: 26cm;
+            --tamlogo: 4cm;
+        }
+        
+        .fijo {
+            height: 1.6cm;
+            background: white;
+            position: absolute;
+            width: 100%;
+            box-shadow: 0 2mm 5mm grey;
+            z-index: 1000;
+        }
+        
+        .cabecera {
+            /*background: blue;*/
+            height: 100%;
+            width: var(--ancho);
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            background: magenta;
+            height: 80%;
+            width: var(--tamlogo);
+            min-width: var(--tamlogo);
+        }
+        
+        .cuerpo {
+            height: calc(100% - 1.6cm);
+            background: lightgray;
+            overflow: auto;
+            padding-top: 1.6cm;
+        }
+        
+        .pie {
+            bottom: 0;
+            height: 1.6cm;
+            margin-top: 2mm;
+            background: white;
+            width: 100%;
+        }
+        
+        .bloque1 {
+            background: red;
+            height: 400px;
+        }
+        
+        .bloque2 {
+            background: blue;
+            height: 400px;
+        }
+        
+        .contenido {
+            height: auto;
+            min-height: calc(100% - 1.8cm);
+            background: lightgray;
+            display: flex;
+        }
+        
+        .menu {
+            padding-left: 5mm;
+            padding-right: 5mm;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .menu:hover {
+            color: lightgray;
+        }
+        
+        .fuente_menu {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: .875rem;
+            font-weight: 700;
+            line-height: normal;
+        }
+        
+        .relleno {
+            height: 100%;
+            width: calc(100% - var(--tamlogo));
+            /*background: cyan;*/
+        }
+        
+        .login {
+            display: flex;
+            background: lightgray;
+            border-radius: 2mm;
+            padding: 2.5mm;
+            margin-right: 2mm;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .login>a {
+            display: flex;
+            text-decoration: none;
+            color: inherit;
+            align-items: center;
+        }
+        
+        .login:hover {
+            background: darkgray;
+        }
+        
+        .icono_login {
+            width: 5mm;
+            height: 5mm;
+            padding-right: 2mm;
+        }
+        
+        .no_login {
+            filter: invert(100%);
+        }
+        
+        .opciones_usuario {
+            background: deeppink;
+            position: absolute;
+            margin-top: 7.5mm;
+            margin-left: -2mm;
+            border-radius: 1.5mm;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0.3s linear, opacity 0.3s linear;
+        }
+        
+        .opciones_usuario>ul {
+            background: lightgrey;
+            margin: 0;
+            padding-left: 0;
+            padding-top: 1mm;
+            padding-bottom: 1mm;
+            font-size: .800rem;
+            box-shadow: 1mm 1mm 5mm grey;
+            border-radius: 1mm;
+        }
+        
+        .buscar {
+            display: inline-flex;
+            background: lightgray;
+            border-radius: 4.5mm;
+            padding: 2.5mm;
+            transition: background 0.3s;
+        }
+        
+        .buscar>input {
+            border: none;
+            background: none;
+            outline: none;
+        }
+        
+        .buscar>img {
+            width: 5mm;
+            height: 5mm;
+            cursor: pointer;
+        }
+        
+        li:not(.opcion_seleccionada):hover {
+            background: darkgray;
+        }
+        
+        .pie {
+            font-size: .800rem;
+            font-weight: 500;
+            text-align: center;
+            display: flex;
+            align-items: center;
+        }
+        
+        .pie>div {
+            margin: auto;
+        }
+        
+        li>a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            padding: 2mm 8mm 2mm 2mm;
+        }
+        
+        span>a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        #login>a {
+            pointer-events: none;
+        }
+    </style>
+    {% block estilos %}{% endblock %}
+</head>
 
-            .fijo {
-                height: 1.6cm;
-                background: white;
-                position: absolute;
-                width: 100%;
-                box-shadow: 0 2mm 5mm grey;
-                                z-index: 1000;
+<body>
+    <script type="text/javascript">
+        function ajax(url, valor, metodo, callback) {
+            metodo = metodo.toUpperCase();
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    callback(this.responseText);
+                }
+            };
+            if (metodo == "POST" || metodo == "GET") {
+                console.log(metodo);
+                xhttp.open(metodo, url, true);
+                if (metodo == "GET") {
+                    xhttp.send();
+                } else {
+                    xhttp.setRequestHeader("Content-type", "application/json");
+                    xhttp.send(valor);
+                }
             }
-
-            .cabecera {
-                /*background: blue;*/
-                height: 100%;
-                width: var(--ancho);
-                margin-left: auto;
-                margin-right: auto;
-                display: flex;
-                align-items: center;      
-            }
-
-            .logo {
-                background: magenta;
-                height: 80%;
-                width : var(--tamlogo);
-                min-width: var(--tamlogo);
-            }
-
-            .cuerpo {
-                height: calc(100% - 1.6cm);
-                background: lightgray;
-                overflow: auto;
-                padding-top: 1.6cm;
-            }
-
-            .pie {
-                bottom:0;
-                height: 1.6cm;
-                margin-top: 2mm;
-
-                background: white;
-                width: 100%;
-            }
-
-            .bloque1 {
-                background: red;
-                height: 400px;
-            }
-
-            .bloque2 {
-                background: blue;
-                height: 400px;
-            }
-
-            .contenido {
-                height: auto;
-                min-height: calc(100% - 1.8cm);
-                background: lightgray;
-                display: flex;
-            }
-
-            .menu {
-                padding-left: 5mm;
-                padding-right: 5mm;
-                cursor : pointer;
-                transition: color 0.3s;
-            }
-
-            .menu:hover {
-                color: lightgray;
-            }
-
-            .fuente_menu {
-                font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-                font-size: .875rem;
-                font-weight: 700;
-                line-height: normal;
-            }
-
-            .relleno {
-                height: 100%;
-                width: calc(100% - var(--tamlogo));
-                /*background: cyan;*/
-            }
-
-            .login {
-                display: flex ;
-                background: lightgray;
-                border-radius: 2mm;
-                padding: 2.5mm;
-                margin-right: 2mm;
-                cursor: pointer;
-                transition: background 0.3s;
-            }
-            
-            .login > a {
-                display: flex;
-                text-decoration: none;
-                color: inherit;
-                align-items: center;
-            }
-
-            .login:hover {
-                background: darkgray;
-            }
-
-            .icono_login {
-                width: 5mm;
-                height: 5mm;
-                padding-right: 2mm;
-            }
-
-            .no_login {
-                filter: invert(100%);
-            }
-
-            .opciones_usuario {
-                background: deeppink;
-                position: absolute;
-                margin-top: 7.5mm;
-                margin-left: -2mm;
-                border-radius: 1.5mm;
-                visibility: hidden;
-                opacity:0;
-                transition:visibility 0.3s linear,opacity 0.3s linear;
-            }
-
-            .opciones_usuario > ul {
-                background: lightgrey;
-                margin: 0;
-                padding-left: 0;
-                padding-top: 1mm;
-                padding-bottom: 1mm;
-                font-size: .800rem;
-                box-shadow: 1mm 1mm 5mm grey;
-                border-radius: 1mm;       
-            }
-
-            .buscar {
-                display: inline-flex;
-                background: lightgray;
-                border-radius: 4.5mm;
-                padding: 2.5mm;
-                transition: background 0.3s;
-            }
-
-            .buscar > input {
-                border: none;
-                background: none;
-                outline: none;
-            }         
-
-            .buscar > img {
-                width: 5mm;
-                height: 5mm;
-                cursor : pointer;
-            }  
-
-            li:not(.opcion_seleccionada):hover {
-                background: darkgray;
-            }
-
-            .pie {
-                font-size: .800rem;
-                font-weight: 500;
-                text-align: center;
-                display: flex;
-                align-items: center;
-            }
-
-            .pie > div {
-                margin: auto;
-            }
-            
-            li > a{
-                text-decoration: none;
-                color: inherit;    
-                display: block;
-                padding: 2mm 8mm 2mm 2mm;
-            }
-            
-            span > a {
-                text-decoration: none;
-                color: inherit; 
-            }
-            
-            #login > a {
-                pointer-events: none;
-            }
-        </style>
-        {% block estilos %}{% endblock %}
-    </head>
-    <body>
-        {% if cabecera is not defined %}  
-            {% set cabecera = false %}
-        {%  endif %}        
-        <div class="fijo">
-            <div class="cabecera noselect">
-                <div class="logo"><a href="/">Inserta aquí<br>el logo</a></div>
-                {% if cabecera == true %}
-                <div class="menu fuente_menu"><span><a href="/series">Series</a></span></div>
-                <div class="menu fuente_menu"><span><a href="/series">Noticias</a></span></div>
-                <div class="menu fuente_menu"><span><a href="/series">Foro</a></span></div>
-                <div class="relleno"></div>
-                        {% if app.user == null %}
-                <div class="login">
-                    <a href="/login">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d3/User_Circle.png" class="icono_login no_login">
-                        <span class="fuente_menu">Login</span>
-                    </a>
-                        {% else %}
+        }
+    </script>
+    {% if cabecera is not defined %} {% set cabecera = false %} {% endif %}
+    <div class="fijo">
+        <div class="cabecera noselect">
+            <div class="logo"><a href="/">Inserta aquí<br>el logo</a></div>
+            {% if cabecera == true %}
+            <div class="menu fuente_menu"><span><a href="/series">Series</a></span></div>
+            <div class="menu fuente_menu"><span><a href="/series">Noticias</a></span></div>
+            <div class="menu fuente_menu"><span><a href="/series">Foro</a></span></div>
+            <div class="relleno"></div>
+            {% if app.user == null %}
+            <div class="login">
+                <a href="/login">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d3/User_Circle.png" class="icono_login no_login">
+                    <span class="fuente_menu">Login</span>
+                </a>
+                {% else %}
                 <div id="login" class="login" onclick="desplega_menu()">
                     <a>
                         <img src="https://upload.wikimedia.org/wikipedia/commons/d/d3/User_Circle.png" class="icono_login">
-                        <span class="fuente_menu">{{ app.user.alias }}</span> 
+                        <span class="fuente_menu">{{ app.user.alias }}</span>
                     </a>
                     <div style="opacity: 0; visibility: hidden;" class="opciones_usuario">
                         <ul style="list-style-type:none" class="fuente_menu">
@@ -276,7 +310,7 @@
                             <li><a href="/logout">Cerrar sesión</a></li>
                         </ul>
                     </div>
-                        {% endif %}
+                    {% endif %}
                 </div>
                 <div class="buscar select">
                     <input type="search" placeholder="Buscar..." onfocus="buscar_input_click()" onblur="document.getElementsByClassName('buscar')[0].style.background='lightgray'">
@@ -287,8 +321,7 @@
         </div>
         <div class="cuerpo">
             <div class="contenido">
-                {% block cabecera %}{% endblock %}
-                {% block cuerpo %}{% endblock %}
+                {% block cabecera %}{% endblock %} {% block cuerpo %}{% endblock %}
             </div>
             <div class="pie fuente_menu">
                 <div>
@@ -299,32 +332,35 @@
         </div>
         {% if cabecera == true %}
         <script type="text/javascript">
-            function buscar_input_click(){
-                document.getElementsByClassName('buscar')[0].style.background='darkgray';
+            function buscar_input_click() {
+                document.getElementsByClassName('buscar')[0].style.background = 'darkgray';
             }
-            
-            {% if app.user != null %}
-            function desplega_menu(){
-                let opcionesUsuario=document.getElementsByClassName('opciones_usuario')[0];
-                if (opcionesUsuario.style.opacity !== "0"){
-                    opcionesUsuario.style.visibility='hidden';
-                    opcionesUsuario.style.opacity="0";                    
+
+            { %
+                if app.user != null %
+            }
+
+            function desplega_menu() {
+                let opcionesUsuario = document.getElementsByClassName('opciones_usuario')[0];
+                if (opcionesUsuario.style.opacity !== "0") {
+                    opcionesUsuario.style.visibility = 'hidden';
+                    opcionesUsuario.style.opacity = "0";
                 } else {
-                    opcionesUsuario.style.visibility='visible';
-                    opcionesUsuario.style.opacity="1";
+                    opcionesUsuario.style.visibility = 'visible';
+                    opcionesUsuario.style.opacity = "1";
                 }
+            } { % endif %
             }
-            {% endif %}
-                
-            window.document.addEventListener("click",function(event){
-                if (event.target.id!=="login"){
-                    let opcionesUsuario=document.getElementsByClassName('opciones_usuario')[0];
-                    opcionesUsuario.style.visibility='hidden';
-                    opcionesUsuario.style.opacity="0";
+
+            window.document.addEventListener("click", function(event) {
+                if (event.target.id !== "login") {
+                    let opcionesUsuario = document.getElementsByClassName('opciones_usuario')[0];
+                    opcionesUsuario.style.visibility = 'hidden';
+                    opcionesUsuario.style.opacity = "0";
                 }
             });
         </script>
-        {%  endif %}
-        {% block codigo %}{% endblock %}
-    </body>
+        {% endif %} {% block codigo %}{% endblock %}
+</body>
+
 </html>

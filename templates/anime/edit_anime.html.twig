@@ -264,8 +264,6 @@
     <div>
         <button type="submit">Guardar</button>
     </div>
-    {% if error is defined %}
-    <input type="hidden" name="error" value="on"> {% endif %}
     <input type="hidden" name="edicion" value="on">
     <input type="hidden" id="anime_id" name="anime_id" value="{{ anime_id }}">
     <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
